@@ -27,12 +27,12 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "firebaseApiKey": "AIzaSyA1JHizDI-lhCl787BOpuq3U9DEjBHxaIs",
-      "firebaseAuthDomain": "bloomind-healthcare-22c1f.firebaseapp.com",
-      "firebaseProjectId": "bloomind-healthcare-22c1f",
-      "firebaseStorageBucket": "bloomind-healthcare-22c1f.firebasestorage.app",
-      "firebaseMessagingSenderId": "730318779680",
-      "firebaseAppId": "1:730318779680:web:af5383d8b7645e4b5cd345"
+      "firebaseApiKey": "demo_key_only_for_reference",
+      "firebaseAuthDomain": "demo.firebaseapp.com",
+      "firebaseProjectId": "demo-project",
+      "firebaseStorageBucket": "demo.appspot.com",
+      "firebaseMessagingSenderId": "123456789",
+      "firebaseAppId": "1:123456789:web:abc123def456"
     }
   }
 }

@@ -2,25 +2,23 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import Constants from "expo-constants";
+import {
+  FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_APP_ID,
+} from "@env";
 
 const firebaseConfig = {
-  apiKey: Constants.expoConfig?.extra?.firebaseApiKey,
-  authDomain: Constants.expoConfig?.extra?.firebaseAuthDomain,
-  projectId: Constants.expoConfig?.extra?.firebaseProjectId,
-  storageBucket: Constants.expoConfig?.extra?.firebaseStorageBucket,
-  messagingSenderId: Constants.expoConfig?.extra?.firebaseMessagingSenderId,
-  appId: Constants.expoConfig?.extra?.firebaseAppId,
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID,
 };
-
-if (!firebaseConfig.apiKey) {
-  console.error("❌ Firebase config missing! Check app.json extra fields.");
-  throw new Error(
-    "Firebase configuration is missing. Please check your app.json file."
-  );
-}
-
-console.log("✅ Firebase config loaded successfully");
 
 const app = initializeApp(firebaseConfig);
 
