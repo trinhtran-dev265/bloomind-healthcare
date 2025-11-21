@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { HomeScreen } from '../../features/home';
 import { LoginScreen, RegisterScreen } from '../../features/auth';
+import { MoodTrackingScreen, MoodCheckScreen } from '../../features/mood/index';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -13,7 +14,7 @@ export const AppNavigator: React.FC = () => {
       screenOptions={{
         headerShown: true,
         headerStyle: {
-          backgroundColor: '#6366f1',
+          backgroundColor: '#ADCC68',
         },
         headerTintColor: '#ffffff',
         headerTitleStyle: {
@@ -24,24 +25,39 @@ export const AppNavigator: React.FC = () => {
         },
       }}
     >
-      <Stack.Screen 
-        name="Home" 
+      <Stack.Screen
+        name="Home"
         component={HomeScreen}
         options={{
           title: 'Bloomind Health',
           headerShown: true,
         }}
       />
-      <Stack.Screen 
-        name="Login" 
+      <Stack.Screen
+        name="Login"
         component={LoginScreen}
         options={{ title: 'Sign In' }}
       />
-      <Stack.Screen 
-        name="Register" 
+      <Stack.Screen
+        name="Register"
         component={RegisterScreen}
         options={{ title: 'Create Account' }}
       />
+
+      <Stack.Screen
+        name="MoodTracking"
+        component={MoodTrackingScreen}
+        options={{ title: 'Theo dõi tâm trạng' }}
+      />
+
+      <Stack.Screen
+        name="MoodCheck"
+        component={MoodCheckScreen}
+        options={{ title: 'Ghi lại cảm xúc' }}
+      />
+
+
+
     </Stack.Navigator>
   );
 };

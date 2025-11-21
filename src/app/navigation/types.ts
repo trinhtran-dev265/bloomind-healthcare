@@ -4,6 +4,7 @@ export type RootStackParamList = {
   Register: undefined;
   Profile: undefined;
   MoodTracking: undefined;
+  MoodCheck: undefined;
   Journal: undefined;
   Chatbot: undefined;
   // có thêm thì thêm dô nha mng 

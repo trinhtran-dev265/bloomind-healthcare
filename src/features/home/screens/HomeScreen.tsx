@@ -5,7 +5,8 @@ import {
   Text, 
   StyleSheet, 
   ScrollView,
-  Alert 
+  Alert,
+  TouchableOpacity 
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../app/navigation/types';
@@ -33,6 +34,10 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleNavigateToRegister = () => {
     navigation.navigate('Register');
+  };
+
+   const handleNavigateToMoodTracking = () => {
+    navigation.navigate('MoodTracking');
   };
 
   return (
@@ -77,10 +82,10 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Coming Soon Features</Text>
           <View style={styles.featureGrid}>
-            <View style={styles.featureCard}>
+            <TouchableOpacity style={styles.featureCard} onPress={handleNavigateToMoodTracking}>
               <Text style={styles.featureIcon}>😊</Text>
               <Text style={styles.featureText}>Mood Tracking</Text>
-            </View>
+            </TouchableOpacity>
             <View style={styles.featureCard}>
               <Text style={styles.featureIcon}>📖</Text>
               <Text style={styles.featureText}>Journal</Text>
