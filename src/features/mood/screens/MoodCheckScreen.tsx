@@ -11,56 +11,10 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import normalImg from '../assets/normal.png';
-import happyImg from '../assets/happy.png';
-import calmImg from '../assets/calm.png';
-import sadImg from '../assets/sad.png';
-import anxiousImg from '../assets/anxious.png';
+// Import MOODS từ utils
+import { MOODS } from '../utils/moodUtils';
 
 type NavigationProp = NativeStackNavigationProp<any>;
-
-const MOODS = [
-  {
-    id: 'normal',
-    label: 'Bình thường',
-    bgColor: '#FFF4C1',
-    textColor: '#7C691D',
-    dotColor: '#FFD43B',
-    image: normalImg,
-  },
-  {
-    id: 'happy',
-    label: 'Vui vẻ',
-    bgColor: '#FFE1E4',
-    textColor: '#7C1D38',
-    dotColor: '#F28D9E',
-    image: happyImg,
-  },
-  {
-    id: 'calm',
-    label: 'Bình yên',
-    bgColor: '#EBF8D7',
-    textColor: '#48660E',
-    dotColor: '#C4E096',
-    image: calmImg,
-  },
-  {
-    id: 'sad',
-    label: 'Buồn',
-    bgColor: '#D1F1FF',
-    textColor: '#42606A',
-    dotColor: '#7ED0FF',
-    image: sadImg,
-  },
-  {
-    id: 'anxious',
-    label: 'Lo lắng',
-    bgColor: '#E5D9FD',
-    textColor: '#4B367D',
-    dotColor: '#B59EFF',
-    image: anxiousImg,
-  },
-];
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -70,32 +24,25 @@ const MoodCheckScreen = () => {
   const currentMood = MOODS.find(m => m.id === selectedMoodId) || MOODS[0];
 
   const onSaveMood = () => {
-    // TODO: Save the mood here (e.g., API or state management)
-    // Then navigate to your target screen, example:
-    navigation.navigate('NextScreen'); 
+    navigation.navigate('NextScreen');
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: currentMood.bgColor }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: currentMood.bgColorLight }]}>
       <View style={styles.content}>
-        {/* Question */}
-        <Text style={[styles.questionText, { color: '#333' }]}>
-          Hôm nay bạn{' '}
-          <Text style={[styles.highlightText, { color: currentMood.textColor }]}>
-            cảm thấy thế nào?
+        <View style={[styles.moodContainer, { backgroundColor: currentMood.bgColor, shadowColor: currentMood.dotColor }]}>
+          <Text style={[styles.highlightText, { color: currentMood.textColor }]} numberOfLines={2}>
+            Hôm nay bạn{'\n'}cảm thấy thế nào?
           </Text>
-        </Text>
 
-        {/* Mood Label */}
-        <Text style={[styles.moodLabel, { color: currentMood.textColor }]}>
-          {currentMood.label}
-        </Text>
+          {/* Mood Label */}
+          <Text style={[styles.moodLabel, { color: currentMood.textColor }]}>
+            {currentMood.label}
+          </Text>
 
-        {/* Mood Circle */}
-        <View style={[styles.moodCircle, { backgroundColor: currentMood.bgColor, shadowColor: currentMood.dotColor }]}>
+          {/* Mood Image */}
           <Image source={currentMood.image} style={styles.moodImage} resizeMode="contain" />
         </View>
-
         {/* Mood Dots row */}
         <View style={styles.dotsRow}>
           {MOODS.map(mood => {
@@ -109,7 +56,7 @@ const MoodCheckScreen = () => {
                   styles.moodDot,
                   { backgroundColor: mood.dotColor },
                   isSelected && {
-                    transform: [{ scale: 1.4 }],
+                    transform: [{ scale: 1.8 }],
                     shadowColor: mood.dotColor,
                     shadowOffset: { width: 0, height: 4 },
                     shadowOpacity: 0.5,
@@ -122,14 +69,15 @@ const MoodCheckScreen = () => {
         </View>
 
         {/* Select button */}
-        <TouchableOpacity 
-          style={[styles.selectButton, { backgroundColor: currentMood.textColor }]}
+        <TouchableOpacity
+          style={[styles.selectButton,]}
           onPress={onSaveMood}
           activeOpacity={0.8}
         >
           <Text style={styles.selectButtonText}>Chọn cảm xúc</Text>
         </TouchableOpacity>
       </View>
+
     </SafeAreaView>
   );
 };
@@ -142,40 +90,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  questionText: {
+  moodContainer: {
+    width: screenWidth - 48,
+    minHeight: 300,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+    marginTop: -20,
+    borderRadius: 20,
+  },
+  highlightText: {
+    fontWeight: '900',
+    fontSize: 26,
+    textAlign: 'center',
+    marginBottom: 10,  
+    marginTop: 10,
+  },
+  moodLabel: {
     fontSize: 22,
     fontWeight: '600',
     textAlign: 'center',
-  },
-  highlightText: {
-    fontWeight: '700',
-  },
-  moodLabel: {
-    marginTop: 4,
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 30,
-  },
-  moodCircle: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // 3D shadow and layering for circle look
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.7,
-    shadowRadius: 10,
-    elevation: 10,
+    marginBottom: 40,
   },
   moodImage: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
+    marginBottom: 10,
   },
   dotsRow: {
     flexDirection: 'row',
-    marginVertical: 40,
+    marginBottom: 60,
     justifyContent: 'center',
+    marginTop: 40,
   },
   moodDot: {
     width: 20,
@@ -184,11 +130,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   selectButton: {
-    width: screenWidth - 48,
-    height: 44,
+    width: screenWidth - 96,
+    height: 50,
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#555555',
   },
   selectButtonText: {
     color: '#fff',
