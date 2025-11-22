@@ -6,6 +6,8 @@ export type RootStackParamList = {
   MoodTracking: undefined;
   Journal: undefined;
   Chatbot: undefined;
+
+
   // có thêm thì thêm dô nha mng 
 };
 

@@ -5,7 +5,7 @@ import {
   Text, 
   StyleSheet, 
   ScrollView,
-  Alert 
+  Alert,TouchableOpacity
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../app/navigation/types';
@@ -34,7 +34,9 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const handleNavigateToRegister = () => {
     navigation.navigate('Register');
   };
-
+  const handleNavigateToChatbot = () => {
+    navigation.navigate('Chatbot');
+  };
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -85,10 +87,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.featureIcon}>📖</Text>
               <Text style={styles.featureText}>Journal</Text>
             </View>
-            <View style={styles.featureCard}>
+            <TouchableOpacity style={styles.featureCard} onPress={handleNavigateToChatbot}>
               <Text style={styles.featureIcon}>🤖</Text>
-              <Text style={styles.featureText}>AI Chatbot</Text>
-            </View>
+              <Text style={styles.featureText}>Chatbot</Text>
+            </TouchableOpacity>
+
             <View style={styles.featureCard}>
               <Text style={styles.featureIcon}>📊</Text>
               <Text style={styles.featureText}>Analytics</Text>
