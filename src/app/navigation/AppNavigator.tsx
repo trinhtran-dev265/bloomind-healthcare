@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { HomeScreen } from '../../features/home';
 import { LoginScreen, RegisterScreen } from '../../features/auth';
-import { ChatScreen } from '../../features/chatbot';
+import { ChatScreen, ChatHistoryScreen} from '../../features/chatbot';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -47,6 +47,11 @@ export const AppNavigator: React.FC = () => {
         name="Chatbot"
         component={ChatScreen}
         options={{ title: 'Chatbot' }}
+      />
+        <Stack.Screen
+        name="ChatHistory"
+        component={ChatHistoryScreen}
+        options={{ title: 'Chat History' }}
       />
     </Stack.Navigator>
   );
