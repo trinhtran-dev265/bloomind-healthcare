@@ -3,6 +3,8 @@ import { View, FlatList, Text, TouchableOpacity, SafeAreaView, StyleSheet } from
 import ChatBubble from '../components/ChatBubble';
 import MessageInput from '../components/MessageInput';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+
 
 interface Message {
   id: string;
@@ -11,6 +13,8 @@ interface Message {
 }
 
 const ChatScreen: React.FC = () => {
+  const navigation = useNavigation();
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -39,8 +43,9 @@ const ChatScreen: React.FC = () => {
   const sendMessage = (text: string) => {
     const newMsg: Message = { id: Date.now().toString(), text, sender: 'user' };
     setMessages((prev) => [...prev, newMsg]);
-    // giả lập bot phản hồi
+
     setShowTypingIndicator(true);
+
     setTimeout(() => {
       const botReply: Message = {
         id: (Date.now() + 1).toString(),
@@ -52,62 +57,76 @@ const ChatScreen: React.FC = () => {
     }, 1500);
   };
 
-  const renderItem = ({ item }: { item: Message }) => <ChatBubble message={item.text} sender={item.sender} />;
+  const renderItem = ({ item }: { item: Message }) => (
+    <ChatBubble message={item.text} sender={item.sender} />
+  );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={styles.container}>
+
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity>
-          <Ionicons name="arrow-back" size={25} color="#222" />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={25} color="#1C1C1E" />
         </TouchableOpacity>
+
         <Text style={styles.headerTitle}>Chat with Meowi</Text>
-        <TouchableOpacity>
-          <Ionicons name="refresh" size={25} color="#222" />
+
+        <TouchableOpacity onPress={() => navigation.navigate('ChatHistory')}>
+          <Ionicons name="time-outline" size={25} color="#1C1C1E" />
         </TouchableOpacity>
       </View>
 
       {/* Chat list */}
       <FlatList
-        contentContainerStyle={{ padding: 12, paddingBottom: 20 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 30 }}
         data={messages}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        inverted // Đảo ngược danh sách để tin nhắn mới ở dưới
+        inverted
       />
 
-      {/* Typing Indicator */}
+      {/* Typing indicator */}
       {showTypingIndicator && (
         <View style={styles.typingIndicator}>
-          <Text style={{ color: '#9AA5B1', fontStyle: 'italic' }}>Meowi is typing...</Text>
+          <Text style={styles.typingText}>Meowi is typing...</Text>
         </View>
       )}
 
       {/* Input */}
       <MessageInput onSend={sendMessage} />
+
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   header: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomColor: '#E4E6EB',
+    borderBottomColor: '#E5E5EA',
     borderBottomWidth: 1,
     backgroundColor: 'white',
   },
   headerTitle: {
     fontWeight: '600',
-    fontSize: 18,
-    color: '#222',
+    fontSize: 17,
+    color: '#1C1C1E',
   },
   typingIndicator: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 6,
+  },
+  typingText: {
+    color: '#A0A0A5',
+    fontStyle: 'italic',
   },
 });
 
