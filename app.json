@@ -33,6 +33,9 @@
       "firebaseStorageBucket": "demo.appspot.com",
       "firebaseMessagingSenderId": "123456789",
       "firebaseAppId": "1:123456789:web:abc123def456"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
