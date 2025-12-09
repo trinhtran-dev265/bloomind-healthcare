@@ -2,7 +2,7 @@
 export interface ActivityItem {
   id: string;
   label: string;
-  icon: string;
+  icon: string; 
   color: string;
 }
 
