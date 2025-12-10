@@ -34,7 +34,7 @@ export default function StreakCard({ streak }: Props) {
         </View>
         <View style={[styles.statBox, { backgroundColor: "#FFF7E1" }]}>
           <Feather name="check-circle" size={16} color="#FFC107" />
-          <Text style={styles.statLabel}>Tổng số mục nhập</Text>
+          <Text style={styles.statLabel}>Số lần ghi</Text>
           <Text style={styles.statValue}>{streak.totalEntries}</Text>
         </View>
       </View>
@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
   },
-  statLabel: { fontSize: 12, color: "#666", marginTop: 4 },
-  statValue: { fontSize: 16, fontWeight: "700", marginTop: 2 },
+  statLabel: { fontSize: 12, color: "#666", marginTop: 4,textAlign: "center", },
+  statValue: { fontSize: 16, fontWeight: "700", marginTop: 2,textAlign: "center", },
 
   weekRow: { flexDirection: "row", justifyContent: "center",  },
   cellWrapper: { alignItems: "center", flex: 1, marginVertical: 10 },

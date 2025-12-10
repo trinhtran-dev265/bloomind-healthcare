@@ -96,26 +96,34 @@ export default function MoodYearMiniMonths({ year, moodByYear, streak, onPressMo
       {/* Year Streak */}
       {streak && (
         <View style={styles.streakCard}>
-         
+
           {/* HEADER */}
           <View style={styles.headerRow}>
             <Feather name="zap" size={18} color="#333" />
             <Text style={styles.title}>Chuỗi ngày liên tiếp</Text>
           </View>
+
+          {/* Top stats */}
           <View style={styles.streakStatsRow}>
             <View style={[styles.statBox, { backgroundColor: "#E7F6ED" }]}>
+              <Feather name="clock" size={16} color="#4CAF50" />
               <Text style={styles.statLabel}>Hiện tại</Text>
               <Text style={styles.statValue}>{streak.current}</Text>
             </View>
+
             <View style={[styles.statBox, { backgroundColor: "#FFEAEA" }]}>
+              <Feather name="award" size={16} color="#F44336" />
               <Text style={styles.statLabel}>Dài nhất</Text>
               <Text style={styles.statValue}>{streak.longest}</Text>
             </View>
+
             <View style={[styles.statBox, { backgroundColor: "#FFF7E1" }]}>
-              <Text style={styles.statLabel}>Tổng số mục nhập</Text>
+              <Feather name="check-circle" size={16} color="#FFC107" />
+              <Text style={styles.statLabel}>Số lần ghi</Text>
               <Text style={styles.statValue}>{streak.totalEntries}</Text>
             </View>
           </View>
+
         </View>
       )}
 
@@ -137,9 +145,9 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 10,
     backgroundColor: "#fff",
-    borderRadius:20
+    borderRadius: 20
   },
-   headerRow: {
+  headerRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
@@ -188,16 +196,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 12,
     borderRadius: 12,
-    marginBottom: 12,
+    marginBottom: 2,
   },
   streakTitle: { fontSize: 14, fontWeight: "600", marginBottom: 8 },
   streakStatsRow: { flexDirection: "row", justifyContent: "space-between" },
   statBox: {
     width: "32%",
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 12,
     alignItems: "center",
   },
-  statLabel: { fontSize: 12, color: "#666" },
-  statValue: { fontSize: 16, fontWeight: "700", marginTop: 2 },
+  statLabel: { fontSize: 12, color: "#666", textAlign: "center", marginTop:4},
+  statValue: { fontSize: 14, fontWeight: "600", marginTop: 2, textAlign: "center", },
 });
