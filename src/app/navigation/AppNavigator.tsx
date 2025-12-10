@@ -4,7 +4,7 @@ import { RootStackParamList } from './types';
 import { HomeScreen } from '../../features/home';
 import { LoginScreen, RegisterScreen } from '../../features/auth';
 import { MoodTrackingScreen, ActivitiesScreen, MoodTrackingSavedScreen } from '../../features/mood/index';
-
+import { AnalysisScreen, MoodHistoryScreen } from '../../features/analysis/index';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -16,7 +16,7 @@ export const AppNavigator: React.FC = () => {
         headerShown: true,
         headerStyle: {
           backgroundColor: '#ffffff',
-
+          
         },
         headerTintColor: '#000000',
         headerTitleStyle: {
@@ -51,20 +51,27 @@ export const AppNavigator: React.FC = () => {
         component={MoodTrackingScreen}
         options={{ title: 'Mood tracking' }}
       />
-
       <Stack.Screen
         name="Activities"
         component={ActivitiesScreen}
         options={{ title: 'Activities' }}
       />
-
       <Stack.Screen
         name="MoodTrackingSaved"
         component={MoodTrackingSavedScreen}
         options={{ title: 'Done' }}
       />
 
-
+      <Stack.Screen
+        name="Analysis"
+        component={AnalysisScreen}
+        options={{ title: 'Analysis' }}
+      />
+      <Stack.Screen
+        name="MoodHistory"
+        component={MoodHistoryScreen}
+        options={{ title: 'Mood History' }}
+      />
 
     </Stack.Navigator>
   );

@@ -9,6 +9,9 @@ export type RootStackParamList = {
   MoodTrackingSaved: undefined; 
 
   Analysis: undefined;
+  MoodHistory: undefined;
+  MonthDetail: undefined;
+  // MonthDetail: { month: number; year: number };
 
   Journal: undefined;
   Chatbot: undefined;
