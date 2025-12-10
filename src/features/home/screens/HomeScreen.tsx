@@ -1,9 +1,9 @@
 // src/features/home/screens/HomeScreen.tsx
 import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  StyleSheet,
   ScrollView,
   Alert,TouchableOpacity
 } from 'react-native';
@@ -18,7 +18,7 @@ interface Props {
 }
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
-  
+
   const handleTestButton = () => {
     Alert.alert(
       '🎉 Success!',
@@ -37,6 +37,15 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const handleNavigateToChatbot = () => {
     navigation.navigate('Chatbot');
   };
+
+  const handleNavigateToMoodTracking = () => {
+    navigation.navigate('MoodTracking');
+  };
+
+  const handleNavigateToAnalysis = () => {
+    navigation.navigate('Analysis');
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -79,10 +88,10 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Coming Soon Features</Text>
           <View style={styles.featureGrid}>
-            <View style={styles.featureCard}>
+            <TouchableOpacity style={styles.featureCard} onPress={handleNavigateToMoodTracking}>
               <Text style={styles.featureIcon}>😊</Text>
               <Text style={styles.featureText}>Mood Tracking</Text>
-            </View>
+            </TouchableOpacity>
             <View style={styles.featureCard}>
               <Text style={styles.featureIcon}>📖</Text>
               <Text style={styles.featureText}>Journal</Text>
@@ -92,10 +101,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.featureText}>Chatbot</Text>
             </TouchableOpacity>
 
-            <View style={styles.featureCard}>
+            <TouchableOpacity style={styles.featureCard} onPress={handleNavigateToAnalysis}>
               <Text style={styles.featureIcon}>📊</Text>
               <Text style={styles.featureText}>Analytics</Text>
-            </View>
+            </TouchableOpacity>
+
           </View>
         </View>
       </View>
