@@ -5,8 +5,8 @@ import { Feather } from "@expo/vector-icons";
 
 interface Props {
   streak: StreakMonthData;
-  month?: number; 
-  year?: number;  
+  month?: number;
+  year?: number;
 }
 
 export default function StreakMonthChart({ streak, month, year }: Props) {
@@ -56,20 +56,24 @@ export default function StreakMonthChart({ streak, month, year }: Props) {
       {/* Top stats */}
       <View style={styles.statsRow}>
         <View style={[styles.statBox, { backgroundColor: "#E7F6ED" }]}>
+          <Feather name="clock" size={16} color="#4CAF50" />
           <Text style={styles.statLabel}>Hiện tại</Text>
           <Text style={styles.statValue}>{streak.current}</Text>
         </View>
 
         <View style={[styles.statBox, { backgroundColor: "#FFEAEA" }]}>
+          <Feather name="award" size={16} color="#F44336" />
           <Text style={styles.statLabel}>Dài nhất</Text>
           <Text style={styles.statValue}>{streak.longest}</Text>
         </View>
 
         <View style={[styles.statBox, { backgroundColor: "#FFF7E1" }]}>
-          <Text style={styles.statLabel}>Tổng số mục nhập</Text>
+          <Feather name="check-circle" size={16} color="#FFC107" />
+          <Text style={styles.statLabel}>Số lần ghi</Text>
           <Text style={styles.statValue}>{streak.totalEntries}</Text>
         </View>
       </View>
+
 
       {/* weekdays labels */}
       <View style={styles.weekRow}>
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
     borderRadius: 16,
-    marginVertical:10,
+    marginVertical: 10,
   },
 
   headerRow: {
@@ -155,8 +159,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
   },
-  statLabel: { fontSize: 12, color: "#666" },
-  statValue: { fontSize: 20, fontWeight: "700", marginTop: 4 },
+  statLabel: { fontSize: 12, color: "#666", textAlign: "center", marginTop:4 },
+  statValue: { fontSize: 16, fontWeight: "600", marginTop: 4, textAlign: "center", },
 
   weekRow: {
     marginTop: 14,
