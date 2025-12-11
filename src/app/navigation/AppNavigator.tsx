@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { HomeScreen } from '../../features/home';
 import { LoginScreen, RegisterScreen } from '../../features/auth';
+import { ChatScreen, ChatHistoryScreen} from '../../features/chatbot';
 import { MoodTrackingScreen, ActivitiesScreen, MoodTrackingSavedScreen } from '../../features/mood/index';
 import { AnalysisScreen, MoodHistoryScreen } from '../../features/analysis/index';
 
@@ -44,6 +45,16 @@ export const AppNavigator: React.FC = () => {
         name="Register"
         component={RegisterScreen}
         options={{ title: 'Create Account' }}
+      />
+      <Stack.Screen
+        name="Chatbot"
+        component={ChatScreen}
+        options={{ title: 'Chatbot' }}
+      />
+        <Stack.Screen
+        name="ChatHistory"
+        component={ChatHistoryScreen}
+        options={{ title: 'Chat History' }}
       />
 
       <Stack.Screen

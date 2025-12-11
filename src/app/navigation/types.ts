@@ -15,6 +15,10 @@ export type RootStackParamList = {
 
   Journal: undefined;
   Chatbot: undefined;
+  ChatHistory: undefined;
+
+
+  // có thêm thì thêm dô nha mng 
   
 };
 
