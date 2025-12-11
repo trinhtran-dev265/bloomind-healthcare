@@ -22,10 +22,8 @@ export const AppNavigator: React.FC = () => {
         headerShown: true,
         headerStyle: {
           backgroundColor: COLORS.primary,
-          backgroundColor: '#ffffff',
-          
         },
-        headerTintColor: '#000000',
+        headerTintColor: '#ffffff',
         headerTitleStyle: {
           fontWeight: 'bold',
         },
