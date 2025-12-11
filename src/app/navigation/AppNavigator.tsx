@@ -2,6 +2,12 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { HomeScreen } from '../../features/home';
+import { LoginScreen } from '../../features/auth';
+import { COLORS } from '../../types/contants/colors';
+import SplashScreen from '../../features/home/screens/SplashScreen';
+import { MoodDiaryScreen } from '../../features/mood/screens/MoodDiaryScreen';
+import { ThankYouScreen } from '../../features/mood/screens/ThankYouScreen';
+import { PleasantActivitiesScreen } from '../../features/mood/screens/PleasantActivitiesScreen';
 import { LoginScreen, RegisterScreen } from '../../features/auth';
 import { ChatScreen, ChatHistoryScreen} from '../../features/chatbot';
 import { MoodTrackingScreen, ActivitiesScreen, MoodTrackingSavedScreen } from '../../features/mood/index';
@@ -12,10 +18,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const AppNavigator: React.FC = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="Splash"
       screenOptions={{
         headerShown: true,
         headerStyle: {
+          backgroundColor: COLORS.primary,
           backgroundColor: '#ffffff',
           
         },
@@ -24,23 +31,59 @@ export const AppNavigator: React.FC = () => {
           fontWeight: 'bold',
         },
         contentStyle: {
-          backgroundColor: '#f8fafc',
+          backgroundColor: COLORS.background.primary,
         },
       }}
     >
+      <Stack.Screen 
+        name="Splash" 
+        component={SplashScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      
+      <Stack.Screen 
+        name="Home" 
       <Stack.Screen
         name="Home"
         component={HomeScreen}
         options={{
-          title: 'Bloomind Health',
-          headerShown: true,
+          headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="Login"
+      
+      <Stack.Screen 
+        name="Login" 
         component={LoginScreen}
-        options={{ title: 'Sign In' }}
+        options={{ headerShown: false, }}
       />
+
+      <Stack.Screen
+        name="MoodDiary"
+        component={MoodDiaryScreen}
+        options={{
+          headerShown: false,
+          presentation: "modal",
+      }}
+      />
+
+      <Stack.Screen
+        name="ThankYou"
+        component={ThankYouScreen}
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
+      />
+
+      <Stack.Screen
+        name="PleasantActivities"
+        component={PleasantActivitiesScreen}
+        options={{
+          headerShown: false,
+          presentation: "modal",
+        }}
       <Stack.Screen
         name="Register"
         component={RegisterScreen}

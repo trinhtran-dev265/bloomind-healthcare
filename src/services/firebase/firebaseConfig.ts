@@ -12,12 +12,12 @@ import {
 } from "@env";
 
 const firebaseConfig = {
-  apiKey: FIREBASE_API_KEY,
-  authDomain: FIREBASE_AUTH_DOMAIN,
-  projectId: FIREBASE_PROJECT_ID,
-  storageBucket: FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
-  appId: FIREBASE_APP_ID,
+  apiKey: FIREBASE_API_KEY || "missing",
+  authDomain: FIREBASE_AUTH_DOMAIN || "missing",
+  projectId: FIREBASE_PROJECT_ID || "missing",
+  storageBucket: FIREBASE_STORAGE_BUCKET || "missing",
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID || "missing",
+  appId: FIREBASE_APP_ID || "missing",
 };
 
 const app = initializeApp(firebaseConfig);

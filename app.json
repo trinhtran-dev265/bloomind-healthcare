@@ -13,9 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.bloomind.healthcare",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.bloomind.healthcare",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -35,7 +37,7 @@
       "firebaseAppId": "1:123456789:web:abc123def456"
     },
     "plugins": [
-      "expo-font"
+      "expo-web-browser"
     ]
   }
 }

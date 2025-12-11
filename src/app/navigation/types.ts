@@ -1,4 +1,5 @@
 export type RootStackParamList = {
+  Splash: undefined;
   Home: undefined;
   Login: undefined;
   Register: undefined;
@@ -15,11 +16,10 @@ export type RootStackParamList = {
 
   Journal: undefined;
   Chatbot: undefined;
-  ChatHistory: undefined;
-
-
-  // có thêm thì thêm dô nha mng 
-  
+  MoodDiary: undefined;
+  ThankYou: undefined;
+  PleasantActivities: undefined;
+  // có thêm thì thêm dô nha mng
 };
 
 declare global {
