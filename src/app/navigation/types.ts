@@ -19,6 +19,7 @@ export type RootStackParamList = {
   MoodDiary: undefined;
   ThankYou: undefined;
   PleasantActivities: undefined;
+  ChatHistory: undefined;
   // có thêm thì thêm dô nha mng
 };
 

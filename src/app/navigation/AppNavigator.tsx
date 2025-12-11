@@ -8,7 +8,6 @@ import SplashScreen from '../../features/home/screens/SplashScreen';
 import { MoodDiaryScreen } from '../../features/mood/screens/MoodDiaryScreen';
 import { ThankYouScreen } from '../../features/mood/screens/ThankYouScreen';
 import { PleasantActivitiesScreen } from '../../features/mood/screens/PleasantActivitiesScreen';
-import { LoginScreen, RegisterScreen } from '../../features/auth';
 import { ChatScreen, ChatHistoryScreen} from '../../features/chatbot';
 import { MoodTrackingScreen, ActivitiesScreen, MoodTrackingSavedScreen } from '../../features/mood/index';
 import { AnalysisScreen, MoodHistoryScreen } from '../../features/analysis/index';
@@ -44,8 +43,6 @@ export const AppNavigator: React.FC = () => {
       />
       
       <Stack.Screen 
-        name="Home" 
-      <Stack.Screen
         name="Home"
         component={HomeScreen}
         options={{
@@ -84,10 +81,6 @@ export const AppNavigator: React.FC = () => {
           headerShown: false,
           presentation: "modal",
         }}
-      <Stack.Screen
-        name="Register"
-        component={RegisterScreen}
-        options={{ title: 'Create Account' }}
       />
       <Stack.Screen
         name="Chatbot"

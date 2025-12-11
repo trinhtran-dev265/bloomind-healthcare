@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -14,6 +13,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../app/navigation/types";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
@@ -56,28 +56,15 @@ export const HomeScreen: React.FC = () => {
 
   // NEW: offset mascot to the right to balance composition
   // tweak these multipliers to increase/decrease shift
-  const offsetMultiplierWeb = 0.01;   
-  const offsetMultiplierMobile = 0.03; 
+  const offsetMultiplierWeb = 0.06;   // ~6% of width on web
+  const offsetMultiplierMobile = 0.02; // ~2% of width on mobile
   const rawOffset = Math.round(width * (isWeb ? offsetMultiplierWeb : offsetMultiplierMobile));
 
   // limit offset so mascot never goes off-screen: max 18% of width
   const maxOffset = Math.round(width * 0.18);
   const mascotOffsetX = Math.min(rawOffset, maxOffset);
 
-  const handleNavigateToRegister = () => {
-    navigation.navigate('Register');
-  };
-  const handleNavigateToChatbot = () => {
-    navigation.navigate('Chatbot');
-  };
-
-  const handleNavigateToMoodTracking = () => {
-    navigation.navigate('MoodTracking');
-  };
-
-  const handleNavigateToAnalysis = () => {
-    navigation.navigate('Analysis');
-  };
+  const bottomInset = Platform.OS === "ios" ? 34 : 12;
 
   return (
     <SafeAreaView style={styles.safe}>
