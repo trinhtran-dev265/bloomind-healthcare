@@ -8,6 +8,10 @@ import SplashScreen from '../../features/home/screens/SplashScreen';
 import { MoodDiaryScreen } from '../../features/mood/screens/MoodDiaryScreen';
 import { ThankYouScreen } from '../../features/mood/screens/ThankYouScreen';
 import { PleasantActivitiesScreen } from '../../features/mood/screens/PleasantActivitiesScreen';
+import { LoginScreen, RegisterScreen } from '../../features/auth';
+import { ChatScreen, ChatHistoryScreen} from '../../features/chatbot';
+import { MoodTrackingScreen, ActivitiesScreen, MoodTrackingSavedScreen } from '../../features/mood/index';
+import { AnalysisScreen, MoodHistoryScreen } from '../../features/analysis/index';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -19,8 +23,10 @@ export const AppNavigator: React.FC = () => {
         headerShown: true,
         headerStyle: {
           backgroundColor: COLORS.primary,
+          backgroundColor: '#ffffff',
+          
         },
-        headerTintColor: '#ffffff',
+        headerTintColor: '#000000',
         headerTitleStyle: {
           fontWeight: 'bold',
         },
@@ -39,6 +45,8 @@ export const AppNavigator: React.FC = () => {
       
       <Stack.Screen 
         name="Home" 
+      <Stack.Screen
+        name="Home"
         component={HomeScreen}
         options={{
           headerShown: false,
@@ -76,7 +84,49 @@ export const AppNavigator: React.FC = () => {
           headerShown: false,
           presentation: "modal",
         }}
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{ title: 'Create Account' }}
       />
+      <Stack.Screen
+        name="Chatbot"
+        component={ChatScreen}
+        options={{ title: 'Chatbot' }}
+      />
+        <Stack.Screen
+        name="ChatHistory"
+        component={ChatHistoryScreen}
+        options={{ title: 'Chat History' }}
+      />
+
+      <Stack.Screen
+        name="MoodTracking"
+        component={MoodTrackingScreen}
+        options={{ title: 'Mood tracking' }}
+      />
+      <Stack.Screen
+        name="Activities"
+        component={ActivitiesScreen}
+        options={{ title: 'Activities' }}
+      />
+      <Stack.Screen
+        name="MoodTrackingSaved"
+        component={MoodTrackingSavedScreen}
+        options={{ title: 'Done' }}
+      />
+
+      <Stack.Screen
+        name="Analysis"
+        component={AnalysisScreen}
+        options={{ title: 'Analysis' }}
+      />
+      <Stack.Screen
+        name="MoodHistory"
+        component={MoodHistoryScreen}
+        options={{ title: 'Mood History' }}
+      />
+
     </Stack.Navigator>
   );
 };

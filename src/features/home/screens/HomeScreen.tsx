@@ -64,7 +64,20 @@ export const HomeScreen: React.FC = () => {
   const maxOffset = Math.round(width * 0.18);
   const mascotOffsetX = Math.min(rawOffset, maxOffset);
 
-  const bottomInset = Platform.OS === "ios" ? 34 : 12;
+  const handleNavigateToRegister = () => {
+    navigation.navigate('Register');
+  };
+  const handleNavigateToChatbot = () => {
+    navigation.navigate('Chatbot');
+  };
+
+  const handleNavigateToMoodTracking = () => {
+    navigation.navigate('MoodTracking');
+  };
+
+  const handleNavigateToAnalysis = () => {
+    navigation.navigate('Analysis');
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
