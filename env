@@ -1,0 +1,13 @@
+# firebase
+FIREBASE_API_KEY=AIzaSyA1JHizDI-lhCl787BOpuq3U9DEjBHxaIs
+FIREBASE_AUTH_DOMAIN=bloomind-healthcare-22c1f.firebaseapp.com
+FIREBASE_PROJECT_ID=bloomind-healthcare-22c1f
+FIREBASE_STORAGE_BUCKET=bloomind-healthcare-22c1f.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=730318779680
+FIREBASE_APP_ID=1:730318779680:web:af5383d8b7645e4b5cd345
+
+# firebase login by google
+GOOGLE_WEB_CLIENT_ID=545001477768-0lkrugm92bma8aule2vdt0h481flr4d5.apps.googleusercontent.com
+GOOGLE_EXPO_CLIENT_ID=545001477768-a8dfnfjp26ob27kndidjbel325aur45u.apps.googleusercontent.com
+GOOGLE_ANDROID_CLIENT_ID=545001477768-i35vgs4auu73jsmqo516d2ph9cc019jb.apps.googleusercontent.com
+GOOGLE_IOS_CLIENT_ID=545001477768-3s6qn08tbu6eh7v4mq19pbim1jcnn25l.apps.googleusercontent.com

@@ -146,19 +146,19 @@ export const HomeScreen: React.FC = () => {
       {/* Bottom Navigation */}
       <View style={[styles.bottomNavWrap, { paddingBottom: bottomInset }]}>
         <View style={[styles.bottomNav]}>
-          <TouchableOpacity style={styles.navItem} onPress={() => { /* Home */ }}>
+          <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Home")}>
             <Ionicons name="home-outline" size={22} color="#6b6b6b" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.navItem} onPress={() => { /* Rewards */ }}>
-            <Ionicons name="trophy-outline" size={22} color="#6b6b6b" />
+          <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Analysis")}>
+            <Ionicons name="pie-chart-outline" size={22} color="#6b6b6b" />
           </TouchableOpacity>
 
           {/* Placeholder for center FAB space */}
           <View style={{ width: 76 }} />
 
-          <TouchableOpacity style={styles.navItem} onPress={() => { /* Analytics */ }}>
-            <Ionicons name="time-outline" size={22} color="#6b6b6b" />
+          <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Journal")}>
+            <Ionicons name="book-outline" size={22} color="#6b6b6b" />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate("Profile")}>
@@ -172,11 +172,11 @@ export const HomeScreen: React.FC = () => {
             style={styles.fab}
             onPress={() => {
               // primary action
-              navigation.navigate("Journal");
+              navigation.navigate("Chatbot");
             }}
             activeOpacity={0.9}
           >
-            <Feather name="plus" size={28} color="#fff" />
+            <Feather name="message-circle" size={28} color="#fff" />
           </TouchableOpacity>
         </View>
       </View>

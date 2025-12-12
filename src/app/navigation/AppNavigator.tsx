@@ -2,13 +2,13 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { HomeScreen } from '../../features/home';
-import { LoginScreen } from '../../features/auth';
+import { LoginScreen, EmailLoginScreen, RegisterScreen } from '../../features/auth';
 import { COLORS } from '../../types/contants/colors';
 import SplashScreen from '../../features/home/screens/SplashScreen';
 import { MoodDiaryScreen } from '../../features/mood/screens/MoodDiaryScreen';
 import { ThankYouScreen } from '../../features/mood/screens/ThankYouScreen';
 import { PleasantActivitiesScreen } from '../../features/mood/screens/PleasantActivitiesScreen';
-import { ChatScreen, ChatHistoryScreen} from '../../features/chatbot';
+import { ChatScreen, ChatHistoryScreen } from '../../features/chatbot';
 import { MoodTrackingScreen, ActivitiesScreen, MoodTrackingSavedScreen } from '../../features/mood/index';
 import { AnalysisScreen, MoodHistoryScreen } from '../../features/analysis/index';
 
@@ -32,26 +32,36 @@ export const AppNavigator: React.FC = () => {
         },
       }}
     >
-      <Stack.Screen 
-        name="Splash" 
+      <Stack.Screen
+        name="Splash"
         component={SplashScreen}
         options={{
           headerShown: false,
         }}
       />
-      
-      <Stack.Screen 
+
+      <Stack.Screen
         name="Home"
         component={HomeScreen}
         options={{
           headerShown: false,
         }}
       />
-      
-      <Stack.Screen 
-        name="Login" 
+
+      <Stack.Screen
+        name="Login"
         component={LoginScreen}
         options={{ headerShown: false, }}
+      />
+      <Stack.Screen
+        name="EmailLogin"
+        component={EmailLoginScreen}
+        options={{ title: 'Email Login' }}
+      />
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{ title: 'Email Register' }}
       />
 
       <Stack.Screen
@@ -60,7 +70,7 @@ export const AppNavigator: React.FC = () => {
         options={{
           headerShown: false,
           presentation: "modal",
-      }}
+        }}
       />
 
       <Stack.Screen
@@ -83,12 +93,16 @@ export const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="Chatbot"
         component={ChatScreen}
-        options={{ title: 'Chatbot' }}
+        options={{
+          headerShown: false,
+        }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="ChatHistory"
         component={ChatHistoryScreen}
-        options={{ title: 'Chat History' }}
+        options={{
+          headerShown: false,
+        }}
       />
 
       <Stack.Screen
@@ -104,7 +118,9 @@ export const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="MoodTrackingSaved"
         component={MoodTrackingSavedScreen}
-        options={{ title: 'Done' }}
+        options={{
+          headerShown: false,
+        }}
       />
 
       <Stack.Screen

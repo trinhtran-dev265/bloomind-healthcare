@@ -6,7 +6,9 @@ import { makeRedirectUri } from "expo-auth-session";
 import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 import Constants from "expo-constants";
 
-import { auth } from "./firebaseConfig"; // chỉnh path nếu cần
+import { auth } from "./firebaseConfig";
+
+// ENV
 import {
   GOOGLE_WEB_CLIENT_ID,
   GOOGLE_EXPO_CLIENT_ID,
@@ -16,53 +18,65 @@ import {
 
 WebBrowser.maybeCompleteAuthSession();
 
-export function useGoogleLogin(onSuccess?: () => void, onError?: (err: any) => void) {
+export function useGoogleLogin(
+  onSuccess?: () => void,
+  onError?: (err: any) => void
+) {
   const [loading, setLoading] = useState(false);
 
-  // detect Expo Go vs standalone
+  // detect Expo Go
   const isExpoGo = Constants.appOwnership === "expo";
   const useProxy = isExpoGo;
 
-  // expo proxy redirect string (copy đúng @username/slug)
+  // Expo Go bắt buộc phải dùng auth.expo.io
   const expoRedirect = "https://auth.expo.io/@trinhtran.dev/Bloomind-heathcare";
 
-  // build redirectUri as string (avoid passing object with useProxy directly)
-  const redirectUri: string = useProxy ? expoRedirect : makeRedirectUri({ useProxy: false });
+  // FIXED: không dùng { useProxy: false } nữa
+  const redirectUri: string = useProxy
+    ? expoRedirect
+    : makeRedirectUri(); // standalone / dev
 
-  // scopes as mutable array (string[]) to satisfy types
-  const scopes: string[] = ["openid", "profile", "email"];
+  // scopes
+  const scopes = ["openid", "profile", "email"];
 
-  // build config typed as Google.GoogleAuthRequestConfig (we augmented the types)
-  const config: Google.GoogleAuthRequestConfig = {
+  // Google Auth Config
+  const config = {
     clientId: GOOGLE_WEB_CLIENT_ID,
     redirectUri,
     scopes,
     responseType: "id_token",
-    // only include native client ids for standalone builds
+
+    // Expo Go → dùng expoClientId
     ...(useProxy ? { expoClientId: GOOGLE_EXPO_CLIENT_ID } : {}),
-    ...(!useProxy && GOOGLE_ANDROID_CLIENT_ID ? { androidClientId: GOOGLE_ANDROID_CLIENT_ID } : {}),
-    ...(!useProxy && GOOGLE_IOS_CLIENT_ID ? { iosClientId: GOOGLE_IOS_CLIENT_ID } : {}),
-  };
+
+    // Standalone → dùng client id native
+    ...(!useProxy && GOOGLE_ANDROID_CLIENT_ID
+      ? { androidClientId: GOOGLE_ANDROID_CLIENT_ID }
+      : {}),
+    ...(!useProxy && GOOGLE_IOS_CLIENT_ID
+      ? { iosClientId: GOOGLE_IOS_CLIENT_ID }
+      : {}),
+  } satisfies Google.GoogleAuthRequestConfig;
 
   const [request, response, promptAsync] = Google.useAuthRequest(config);
 
+  // Debug
   useEffect(() => {
     if (request) {
-      // debug
-      // @ts-ignore debug
-      console.log("DEBUG request.url =", (request as any).url);
-      // @ts-ignore debug
-      console.log("DEBUG request.redirectUri =", (request as any).redirectUri);
+      console.log("DEBUG request.redirectUri =", request.redirectUri);
     }
   }, [request]);
 
+  // Handle Google response
   useEffect(() => {
     console.log("DEBUG auth response:", response);
+
     if (!response) return;
 
     if (response.type === "success") {
       const params = response.params as Record<string, string | undefined>;
       const id_token = params.id_token;
+
       if (!id_token) {
         onError?.(new Error("Missing id_token from Google response"));
         return;
@@ -70,16 +84,15 @@ export function useGoogleLogin(onSuccess?: () => void, onError?: (err: any) => v
 
       setLoading(true);
       const credential = GoogleAuthProvider.credential(id_token);
+
       signInWithCredential(auth, credential)
         .then(() => onSuccess?.())
         .catch((err) => onError?.(err))
         .finally(() => setLoading(false));
     } else if (response.type === "error") {
       onError?.(response);
-    } else {
-      // cancel/dismiss etc.
     }
-  }, [response, onError, onSuccess]);
+  }, [response]);
 
   const startLogin = async () => {
     try {

@@ -62,7 +62,7 @@ const ChatHistoryScreen = () => {
 export default ChatHistoryScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f1ffff" },
+  container: { flex: 1, backgroundColor: "#f6f1ffff" },
   header: {
     padding: 16,
     flexDirection: "row",
