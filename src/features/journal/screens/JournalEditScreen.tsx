@@ -6,13 +6,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  Keyboard,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 import JournalToolbar from "../components/JournalToolbar";
+import { useBlurOnLeave } from "../hooks/useBlurOnLeave";
 
 export const JournalEditScreen = () => {
+  useBlurOnLeave();
   const navigation = useNavigation();
 
   // ----- Load nội dung từ DetailScreen -----
@@ -23,8 +27,20 @@ export const JournalEditScreen = () => {
   );
 
   const handleSave = () => {
-    navigation.goBack(); // quay về detail hoặc danh sách journal
-  };
+  // Blur trên web
+  if (Platform.OS === 'web') {
+    (document.activeElement as HTMLElement)?.blur();
+  } else {
+    // Chỉ gọi trên mobile
+    const focusedInput = TextInput.State.currentlyFocusedInput();
+    if (focusedInput) {
+      TextInput.State.blurTextInput(focusedInput);
+    }
+  }
+  
+  Keyboard.dismiss();
+  navigation.goBack();
+};
 
   return (
     <View style={styles.container}>

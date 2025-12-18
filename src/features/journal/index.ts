@@ -4,7 +4,6 @@ export * from "./screens/JournalCreateScreen";
 export * from "./screens/JournalEditScreen";
 
 export * from "./components/JournalCard";
-export * from "./components/JournalHeader";
 export * from "./components/BottomToolbar";
 
 export * from "./utils/formatDate";

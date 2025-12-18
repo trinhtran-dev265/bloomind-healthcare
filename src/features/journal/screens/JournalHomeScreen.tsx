@@ -6,9 +6,11 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Platform
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+const isWeb = Platform.OS === 'web';
 
 const JournalHomeScreen = () => {
   const navigation: any = useNavigation();
@@ -18,15 +20,6 @@ const JournalHomeScreen = () => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={25} color="#333" />
-        </TouchableOpacity>
-
-        <Text style={styles.headerTitle}>Nhật ký - Home</Text>
-
-        <View style={{ width: 25 }} />
-      </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
 
@@ -145,11 +138,11 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: "600", color: "#373737" },
 
   banner: {
-    width: "100%",
-    height: 220,
+    width: isWeb ? '50%' : '100%',
+    height: 240,
     resizeMode: "cover",
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    alignSelf: "center",
+    borderRadius: 16,
   },
 
   yearRow: {

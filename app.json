@@ -13,9 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.bloomind.healthcare",
       "supportsTablet": true
     },
     "android": {
+      "package": "com.bloomind.healthcare",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -24,7 +26,10 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "style": {
+        "caretColor": "transparent"
+      }
     },
     "extra": {
       "firebaseApiKey": "demo_key_only_for_reference",
@@ -33,6 +38,9 @@
       "firebaseStorageBucket": "demo.appspot.com",
       "firebaseMessagingSenderId": "123456789",
       "firebaseAppId": "1:123456789:web:abc123def456"
-    }
+    },
+    "plugins": [
+      "expo-web-browser"
+    ]
   }
 }

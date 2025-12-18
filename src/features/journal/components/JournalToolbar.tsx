@@ -1,5 +1,3 @@
-// components/JournalToolbar.tsx
-
 import React, { useState } from "react";
 import {
   View,
@@ -82,9 +80,6 @@ const JournalToolbar = ({
     }
   };
 
-  // ================================
-  // UI
-  // ================================
   return (
     <>
       {/* ---------- TEXT EDITOR PANEL ---------- */}

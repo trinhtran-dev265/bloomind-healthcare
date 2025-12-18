@@ -6,16 +6,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 
-interface Message {
+interface Msg {
   id: string;
   text: string;
-  sender: 'user' | 'bot';
+  sender: "user" | "bot";
 }
 
 const ChatScreen: React.FC = () => {
   const navigation = useNavigation();
 
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<Msg[]>([
     {
       id: '1',
       text: `I'm really sorry to hear that you had such a disheartening experience. Feeling ignored and invisible, especially among people you considered friends, must have been truly painful. You deserve friends who care about your opinions, value your presence, and make you feel included. You are worthy of being seen, heard, and loved.`,
@@ -38,26 +38,28 @@ const ChatScreen: React.FC = () => {
     },
   ]);
 
-  const [showTypingIndicator, setShowTypingIndicator] = useState(false);
+  const [typing, setTyping] = useState(false);
 
-  const sendMessage = (text: string) => {
-    const newMsg: Message = { id: Date.now().toString(), text, sender: 'user' };
+  const onSend = (msg: string) => {
+    const newMsg: Msg = { id: Date.now().toString(), text: msg, sender: "user" };
     setMessages((prev) => [...prev, newMsg]);
 
-    setShowTypingIndicator(true);
+    setTyping(true);
 
     setTimeout(() => {
-      const botReply: Message = {
-        id: (Date.now() + 1).toString(),
-        text: 'Loneliness can indeed make us feel...',
-        sender: 'bot',
-      };
-      setMessages((prev) => [...prev, botReply]);
-      setShowTypingIndicator(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          text: "Loneliness can indeed make us feel vulnerable…",
+          sender: "bot",
+        },
+      ]);
+      setTyping(false);
     }, 1500);
   };
 
-  const renderItem = ({ item }: { item: Message }) => (
+  const renderItem = ({ item }: { item: Msg }) => (
     <ChatBubble message={item.text} sender={item.sender} />
   );
 
@@ -87,14 +89,13 @@ const ChatScreen: React.FC = () => {
       />
 
       {/* Typing indicator */}
-      {showTypingIndicator && (
+      {typing && (
         <View style={styles.typingIndicator}>
           <Text style={styles.typingText}>Meowi is typing...</Text>
-        </View>
-      )}
+        </View>)}
 
       {/* Input */}
-      <MessageInput onSend={sendMessage} />
+      <MessageInput onSend={onSend} />
 
     </SafeAreaView>
   );

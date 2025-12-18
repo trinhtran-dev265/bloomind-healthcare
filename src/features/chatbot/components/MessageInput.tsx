@@ -1,59 +1,76 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from "react";
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface MessageInputProps {
-  onSend: (message: string) => void;
+  onSend: (msg: string) => void;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({ onSend }) => {
-  const [text, setText] = useState('');
+const MessageInput = ({ onSend }: MessageInputProps) => {
+  const [value, setValue] = useState("");
 
-  const handleSend = () => {
-    if (text.trim().length > 0) {
-      onSend(text.trim());
-      setText('');
-    }
+  const send = () => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    onSend(trimmed);
+    setValue("");
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={styles.container}>
-        <Ionicons name="mic-outline" size={24} color="#9AA5B1" style={{ marginRight: 10 }} />
-        <TextInput
-          placeholder="Write your reply..."
-          placeholderTextColor="#9AA5B1"
-          style={styles.input}
-          value={text}
-          onChangeText={setText}
-          multiline
-        />
-        <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
-          <Ionicons name="send" size={24} color="#9AA5B1" />
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+    <View style={styles.container}>
+
+      {/* RECORD ICON */}
+      <TouchableOpacity style={styles.recordBtn}>
+        <Ionicons name="mic-outline" size={22} color="#9AA5B1" />
+      </TouchableOpacity>
+
+      {/* INPUT */}
+      <TextInput
+        placeholder="Write your reply..."
+        placeholderTextColor="#9AA5B1"
+        style={styles.input}
+        value={value}
+        onChangeText={setValue}
+        multiline={false}              
+        returnKeyType="send"            
+        onSubmitEditing={send}          
+        blurOnSubmit={false}
+      />
+
+      {/* SEND BUTTON */}
+      <TouchableOpacity onPress={send} style={styles.btn}>
+        <Ionicons name="send-outline" size={22} color="#9AA5B1" />
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    flexDirection: "row",
+    padding: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E4E6EB',
-    backgroundColor: '#fff',
+    borderTopColor: "#E4E6EB",
+    backgroundColor: "#fff",
+    alignItems: "center",
+    marginBottom:70
+  },
+  recordBtn: {
+    marginRight: 12,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: '#222',
-    maxHeight: 100,
+    fontSize: 15,
+    color: "#222",
   },
-  sendButton: {
-    marginLeft: 12,
+  btn: {
+    paddingLeft: 12,
+    paddingVertical: 4,
   },
 });
 

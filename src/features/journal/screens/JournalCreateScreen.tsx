@@ -15,8 +15,10 @@ import { useNavigation } from "@react-navigation/native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import JournalToolbar from "../components/JournalToolbar";
+import { useBlurOnLeave } from "../hooks/useBlurOnLeave";
 
 const JournalCreateScreen = () => {
+  useBlurOnLeave();
   const navigation: any = useNavigation();
 
   const [title, setTitle] = useState("");
@@ -52,9 +54,6 @@ const JournalCreateScreen = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={25} color="#1C1C1E" />
-          </TouchableOpacity>
 
           <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
             <Text style={styles.saveText}>Lưu</Text>
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
     backgroundColor: "#fff",
   },

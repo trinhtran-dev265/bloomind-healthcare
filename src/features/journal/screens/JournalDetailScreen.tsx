@@ -10,9 +10,6 @@ export const JournalDetailScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={26} />
-        </TouchableOpacity>
 
         <View style={styles.headerIcons}>
           <TouchableOpacity onPress={() => navigation.navigate('JournalEdit')}>
@@ -54,7 +51,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: 20,
   },

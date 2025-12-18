@@ -1,40 +1,44 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { AppNavigator } from './src/app/navigation/AppNavigator';
+import { Platform } from 'react-native';
 import { useEffect } from 'react';
-import { auth, firestore } from './src/services/firebase/firebaseConfig';
-import { Alert } from 'react-native';
-import Constants from 'expo-constants';
-
 
 export default function App() {
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      // 1. Blur body khi app khởi động
+      const blurBody = () => {
+        (document.activeElement as HTMLElement)?.blur();
+        document.body?.blur();
+        document.body.removeAttribute('tabindex');
+      };
+      
+      // Chạy ngay và sau khi render xong
+      blurBody();
+      setTimeout(blurBody, 100);
+      setTimeout(blurBody, 500);
+      
+      // 2. Ngăn body focus khi click/tap
+      document.body.addEventListener('focus', (e) => {
+        (e.target as HTMLElement)?.blur();
+      }, { capture: true });
+      
+      // 3. Thêm style ẩn outline cho body
+      const style = document.createElement('style');
+      style.textContent = `
+        body:focus { outline: none !important; cursor: default !important; }
+        body[tabindex]:focus { outline: none; }
+      `;
+      document.head.appendChild(style);
+      
+      return () => {
+        document.head.removeChild(style);
+      };
+    }
+  }, []);
+
   return (
-    useEffect(() => {
-    // Test firebase config khi app khởi động
-    const testConfig = async () => {
-      try {
-        console.log("🟢 App started - testing config...");
-        console.log("Expo Constants:", Constants.expoConfig);
-        
-        if (Constants.expoConfig?.extra?.firebaseApiKey) {
-          Alert.alert(
-            "✅ Firebase Config", 
-            "API Key found: " + Constants.expoConfig.extra.firebaseApiKey.substring(0, 10) + "..."
-          );
-        } else {
-          Alert.alert(
-            "❌ Firebase Config", 
-            "API Key NOT found in app.json"
-          );
-        }
-      } catch (error) {
-        Alert.alert("🔥 Error", "Config test failed: " );
-      }
-    };
-
-    testConfig();
-  }, []),
-
     <NavigationContainer>
       <StatusBar style="auto" />
       <AppNavigator />
