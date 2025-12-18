@@ -7,6 +7,12 @@ export type RootStackParamList = {
   Profile: undefined;
 
   MoodTracking: undefined;
+  JournalDetail: undefined;
+  JournalCreate: undefined;
+  JournalEdit: undefined;
+  
+
+  // có thêm thì thêm dô nha mng 
   Activities: undefined;
   MoodTrackingSaved: undefined; 
 

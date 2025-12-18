@@ -26,7 +26,10 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "style": {
+        "caretColor": "transparent"
+      }
     },
     "extra": {
       "firebaseApiKey": "demo_key_only_for_reference",
