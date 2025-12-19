@@ -116,8 +116,8 @@ const JournalCreateScreen = () => {
 export default JournalCreateScreen;
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fff" },
-  container: { flex: 1, backgroundColor: "#FBFBFA" },
+  safeArea: { flex: 1, backgroundColor: "#fffbf2" },
+  container: { flex: 1, backgroundColor: "#fffbf2" },
 
   header: {
     paddingHorizontal: 16,
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#fffbf2",
   },
   saveButton: {
     backgroundColor: "#C3E8A9",

@@ -84,7 +84,7 @@ export default JournalEditScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#faf7ef",
+    backgroundColor: "#fffbf2",
     paddingHorizontal: 20,
     paddingTop: 20,
   },

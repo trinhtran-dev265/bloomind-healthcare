@@ -333,61 +333,8 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? 28 : 12,
     alignItems: "center",
   },
-  moodHeaderRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  moodCard: {
-    width: "100%",
-    marginTop: 14,
-    padding: 16,
-    borderRadius: 18,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#EFEFEF",
-  },
 
-  moodCardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    // marginBottom: 10,
-  },
-
-  moodContent: {
-    alignItems: "center",
-  },
-
-  moodIconLarge: {
-    width: 80,
-    height: 80,
-    resizeMode: "contain",
-  },
-
-  moodLabel: {
-    // marginTop: 8,
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-  },
-
-  moodEmptyWrap: {
-    paddingVertical: 12,
-  },
-
-  moodEmpty: {
-    fontSize: 15,
-    color: "#999",
-  },
-
-  moodAction: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#6AA84F",
-    fontWeight: "600",
-  },
-
+  /* ---------- Header ---------- */
   headerRow: {
     width: "100%",
     flexDirection: "row",
@@ -395,13 +342,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
-  leftHeader: { flexDirection: "row", alignItems: "center" },
-
+  leftHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   avatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    borderWidth: 0,
     backgroundColor: "#E6F4E9",
   },
   greetingWrap: {
@@ -421,54 +369,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#2E5F2E",
   },
-  xpText: {
-    fontSize: 12,
-    color: "#A0A0A0",
-  },
-
-  moodTitle: {
-    fontSize: 16,
-    color: "#888",
-  },
-  moodValue: {
-    marginTop: 6,
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#4d4d4dff",
-  },
-
-  moodRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 8,
-  },
-
-  moodIcon: {
-    width: 64,
-    height: 64,
-    marginRight: 12,
-    resizeMode: "contain",
-  },
-  detailMoodRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 6,
-  },
-
-  detailChip: {
-    backgroundColor: "#F1F1F1",
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    marginRight: 6,
-    marginTop: 4,
-  },
-
-  detailChipText: {
-    fontSize: 12,
-    color: "#555",
-  },
-
   fireBtn: {
     width: 44,
     height: 44,
@@ -478,6 +378,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(140,200,120,0.12)",
   },
 
+  /* ---------- Top Actions ---------- */
   topActions: {
     marginTop: 14,
     width: "100%",
@@ -519,6 +420,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  /* ---------- Mascot ---------- */
   mascotContainer: {
     flex: 1,
     width: "100%",
@@ -526,6 +428,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
 
+  /* ---------- Bottom Navigation ---------- */
   bottomNavWrap: {
     position: "absolute",
     left: 0,
@@ -562,7 +465,7 @@ const styles = StyleSheet.create({
 
   fabContainer: {
     position: "absolute",
-    top: -28, // half of FAB size to overlap
+    top: -28,
   },
   fab: {
     width: 56,
@@ -582,5 +485,3 @@ const styles = StyleSheet.create({
     }),
   },
 });
-
-
