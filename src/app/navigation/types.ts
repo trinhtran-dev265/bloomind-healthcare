@@ -9,20 +9,22 @@ export type RootStackParamList = {
   MoodTracking: {
     mode?: string;
   } | undefined;
-
   Activities: {
     moodId?: string;
     moodLabel?: string;
     mode?: string;
   }| undefined;
-  // Activities: undefined; 
   MoodTrackingSaved: undefined;
 
   Analysis: undefined;
   MoodHistory: undefined;
   MonthDetail: undefined;
 
+  JournalDetail: undefined;
+  JournalCreate: undefined;
+  JournalEdit: undefined;
   Journal: undefined;
+  
   Chatbot: undefined;
   ChatHistory: undefined;
 
