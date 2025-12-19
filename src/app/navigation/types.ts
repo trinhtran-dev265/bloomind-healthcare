@@ -6,26 +6,30 @@ export type RootStackParamList = {
   Register: undefined;
   Profile: undefined;
 
-  MoodTracking: undefined;
-  Activities: undefined;
-  MoodTrackingSaved: undefined; 
+  MoodTracking: {
+    mode?: string;
+  } | undefined;
+
+  Activities: {
+    moodId?: string;
+    moodLabel?: string;
+    mode?: string;
+  }| undefined;
+  // Activities: undefined; 
+  MoodTrackingSaved: undefined;
 
   Analysis: undefined;
   MoodHistory: undefined;
   MonthDetail: undefined;
-  // MonthDetail: { month: number; year: number };
 
   Journal: undefined;
   Chatbot: undefined;
-  MoodDiary: undefined;
-  ThankYou: undefined;
-  PleasantActivities: undefined;
   ChatHistory: undefined;
-  // có thêm thì thêm dô nha mng
+
 };
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends RootStackParamList { }
   }
 }

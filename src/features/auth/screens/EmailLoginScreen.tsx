@@ -5,6 +5,7 @@ import { auth, firestore } from '../../../services/firebase/firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../app/navigation/types';
+import { seedActivitiesIfNeeded } from "../../mood/services/seedActivities";
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'EmailLogin'>;
@@ -15,69 +16,71 @@ export const EmailLoginScreen: React.FC<Props> = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const login = async () => {
-  if (!email || !password) {
-    Alert.alert("Lỗi", "Vui lòng nhập đủ email và mật khẩu");
-    return;
-  }
-
-  try {
-    console.log("Đăng nhập với:", email);
-
-    // Đăng nhập Firebase
-    const res = await signInWithEmailAndPassword(auth, email, password);
-    const uid = res.user.uid;
-
-    const userRef = doc(firestore, "users", uid);
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      Alert.alert("Lỗi", "User không tồn tại trong Firestore!");
+    if (!email || !password) {
+      Alert.alert("Lỗi", "Vui lòng nhập đủ email và mật khẩu");
       return;
     }
 
-    const userData = userSnap.data();
+    try {
+      console.log("Đăng nhập với:", email);
 
-    if (userData.disabled === true) {
-      Alert.alert("Tài khoản bị khoá", "Liên hệ admin để mở.");
-      return;
+      // Đăng nhập Firebase
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      const uid = res.user.uid;
+
+      const userRef = doc(firestore, "users", uid);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        Alert.alert("Lỗi", "User không tồn tại trong Firestore!");
+        return;
+      }
+
+      const userData = userSnap.data();
+
+      if (userData.disabled === true) {
+        Alert.alert("Tài khoản bị khoá", "Liên hệ admin để mở.");
+        return;
+      }
+
+      await updateDoc(userRef, {
+        lastLogin: new Date().toISOString(),
+      });
+      // Seed activities nếu user cũ chưa có
+      await seedActivitiesIfNeeded(uid);
+
+      Alert.alert("Thành công", "Đăng nhập thành công!");
+      navigation.replace("Home");
+
+    } catch (err: any) {
+      console.log("🔥 FIREBASE LOGIN ERROR:", err);
+
+      if (err.code === "auth/invalid-credential") {
+        Alert.alert(
+          "Sai email hoặc mật khẩu",
+          "Kiểm tra lại thông tin tài khoản."
+        );
+        return;
+      }
+
+      if (err.code === "auth/user-not-found") {
+        Alert.alert("Không tìm thấy tài khoản", "Email chưa được đăng ký.");
+        return;
+      }
+
+      if (err.code === "auth/wrong-password") {
+        Alert.alert("Sai mật khẩu", "Vui lòng thử lại.");
+        return;
+      }
+
+      if (err.code === "auth/network-request-failed") {
+        Alert.alert("Lỗi mạng", "Kiểm tra kết nối Internet.");
+        return;
+      }
+
+      Alert.alert("Đăng nhập thất bại", err.message);
     }
-
-    await updateDoc(userRef, {
-      lastLogin: new Date().toISOString(),
-    });
-
-    Alert.alert("Thành công", "Đăng nhập thành công!");
-    navigation.replace("Home");
-
-  } catch (err: any) {
-    console.log("🔥 FIREBASE LOGIN ERROR:", err);
-
-    if (err.code === "auth/invalid-credential") {
-      Alert.alert(
-        "Sai email hoặc mật khẩu",
-        "Kiểm tra lại thông tin tài khoản."
-      );
-      return;
-    }
-
-    if (err.code === "auth/user-not-found") {
-      Alert.alert("Không tìm thấy tài khoản", "Email chưa được đăng ký.");
-      return;
-    }
-
-    if (err.code === "auth/wrong-password") {
-      Alert.alert("Sai mật khẩu", "Vui lòng thử lại.");
-      return;
-    }
-
-    if (err.code === "auth/network-request-failed") {
-      Alert.alert("Lỗi mạng", "Kiểm tra kết nối Internet.");
-      return;
-    }
-
-    Alert.alert("Đăng nhập thất bại", err.message);
-  }
-};
+  };
 
   return (
     <View style={styles.container}>

@@ -50,7 +50,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <Image
-          source={require('../../../../assets/images/logo.png')}
+          source={require('../../../assets/images/logo.png')}
           style={styles.logo}
         />
 

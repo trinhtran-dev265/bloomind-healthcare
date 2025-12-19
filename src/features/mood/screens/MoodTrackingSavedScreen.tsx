@@ -2,7 +2,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import RoundedButton from "../components/RoundedButton";
-import { COLORS } from "../utils/theme";
 import { Images } from "../utils/images";
 import { useNavigation } from "@react-navigation/native";
 
@@ -23,24 +22,20 @@ const MoodTrackingSavedScreen = () => {
 
       {/* Message */}
       <Text style={styles.message}>
-        I’m really sorry to hear that you had such a disheartening experience.
-        Feeling ignored and invisible, especially among people you considered
-        friends, must have been truly painful. You deserve friends who care about
-        your opinions, value your presence, and make you feel included. You are
-        worthy of being seen, heard, and loved.
+        "Cảm ơn bạn đã lắng nghe chính mình."
       </Text>
 
       {/* Chat Button */}
       <RoundedButton
         title="Trò chuyện với Bloomie"
-        color={COLORS.primary}
+        color={'#DCFFCB'}
         onPress={() => navigation.navigate("Chatbot" as never)}
       />
 
       {/* Home Button */}
       <RoundedButton
         title="Home"
-        color={COLORS.secondary}
+        color={'#fff'}
         onPress={() => navigation.navigate("Home" as never)}
       />
 
@@ -60,7 +55,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     alignItems: "center",
     paddingHorizontal: 25,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#fffbf2",
   },
 
   avatar: {
@@ -88,7 +83,7 @@ const styles = StyleSheet.create({
     bottom: 25,
     paddingVertical: 12,
     paddingHorizontal: 25,
-    backgroundColor: COLORS.pink,
+    backgroundColor: '#F9D9E6',
     borderRadius: 25,
   },
 

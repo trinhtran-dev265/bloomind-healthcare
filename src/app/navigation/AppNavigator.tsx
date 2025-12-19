@@ -5,9 +5,6 @@ import { HomeScreen } from '../../features/home';
 import { LoginScreen, EmailLoginScreen, RegisterScreen } from '../../features/auth';
 import { COLORS } from '../../types/contants/colors';
 import SplashScreen from '../../features/home/screens/SplashScreen';
-import { MoodDiaryScreen } from '../../features/mood/screens/MoodDiaryScreen';
-import { ThankYouScreen } from '../../features/mood/screens/ThankYouScreen';
-import { PleasantActivitiesScreen } from '../../features/mood/screens/PleasantActivitiesScreen';
 import { ChatScreen, ChatHistoryScreen } from '../../features/chatbot';
 import { MoodTrackingScreen, ActivitiesScreen, MoodTrackingSavedScreen } from '../../features/mood/index';
 import { AnalysisScreen, MoodHistoryScreen } from '../../features/analysis/index';
@@ -21,9 +18,9 @@ export const AppNavigator: React.FC = () => {
       screenOptions={{
         headerShown: true,
         headerStyle: {
-          backgroundColor: COLORS.primary,
+          backgroundColor: '#fff',
         },
-        headerTintColor: '#ffffff',
+        headerTintColor: '#535353ff',
         headerTitleStyle: {
           fontWeight: 'bold',
         },
@@ -64,32 +61,6 @@ export const AppNavigator: React.FC = () => {
         options={{ title: 'Email Register' }}
       />
 
-      <Stack.Screen
-        name="MoodDiary"
-        component={MoodDiaryScreen}
-        options={{
-          headerShown: false,
-          presentation: "modal",
-        }}
-      />
-
-      <Stack.Screen
-        name="ThankYou"
-        component={ThankYouScreen}
-        options={{
-          headerShown: false,
-          presentation: "modal",
-        }}
-      />
-
-      <Stack.Screen
-        name="PleasantActivities"
-        component={PleasantActivitiesScreen}
-        options={{
-          headerShown: false,
-          presentation: "modal",
-        }}
-      />
       <Stack.Screen
         name="Chatbot"
         component={ChatScreen}
