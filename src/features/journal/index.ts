@@ -3,7 +3,6 @@ export * from "./screens/JournalDetailScreen";
 export * from "./screens/JournalCreateScreen";
 export * from "./screens/JournalEditScreen";
 
-export * from "./components/JournalCard";
 export * from "./components/BottomToolbar";
 
 export * from "./utils/formatDate";

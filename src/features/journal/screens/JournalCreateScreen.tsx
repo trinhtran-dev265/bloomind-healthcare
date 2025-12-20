@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import JournalToolbar from "../components/JournalToolbar";
@@ -23,28 +22,47 @@ const JournalCreateScreen = () => {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
-  const showDatePicker = () => setDatePickerVisible(true);
-  const hideDatePicker = () => setDatePickerVisible(false);
-
-  const handleConfirm = (date: Date) => {
-    setSelectedDate(date);
-    hideDatePicker();
+  const handleSave = () => {
+    // TODO: save journal to firestore
+    navigation.goBack();
   };
 
-  // Format lại giống UI: "15 Thg 11 2025"
+  /* ================= HEADER ================= */
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: "",
+      headerShadowVisible: false,
+      headerStyle: { backgroundColor: "#fffbf2" },
+
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{ paddingHorizontal: 4 }}
+        >
+          <Ionicons name="chevron-back" size={26} color="#1C1C1E" />
+        </TouchableOpacity>
+      ),
+
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={handleSave}
+          style={styles.saveButton}
+        >
+          <Text style={styles.saveText}>Lưu</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, title, content, selectedDate]);
+
+  /* ================= DATE ================= */
   const day = selectedDate.getDate();
   const monthYear = selectedDate.toLocaleString("vi-VN", {
     month: "short",
     year: "numeric",
   });
-
-  const handleSave = () => {
-    navigation.goBack();
-  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -52,24 +70,15 @@ const JournalCreateScreen = () => {
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        {/* Header */}
-        <View style={styles.header}>
-
-          <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-            <Text style={styles.saveText}>Lưu</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Body */}
+        {/* BODY */}
         <View style={styles.body}>
-          {/* Date */}
-          <TouchableOpacity style={styles.dateRow} onPress={showDatePicker}>
+          {/* DATE ROW */}
+          <TouchableOpacity
+            style={styles.dateRow}
+            onPress={() => setDatePickerVisible(true)}
+          >
             <Text style={styles.dateNumber}>{day}</Text>
-
-            {/* Text month-year */}
             <Text style={styles.dateText}>{monthYear}</Text>
-
-            {/* ICON nằm sau text */}
             <Feather
               name="chevron-down"
               size={18}
@@ -78,7 +87,7 @@ const JournalCreateScreen = () => {
             />
           </TouchableOpacity>
 
-          {/* Title */}
+          {/* TITLE */}
           <TextInput
             style={styles.titleInput}
             placeholder="Title"
@@ -87,7 +96,7 @@ const JournalCreateScreen = () => {
             placeholderTextColor="#8E8E93"
           />
 
-          {/* Content */}
+          {/* CONTENT */}
           <TextInput
             style={styles.contentInput}
             placeholder="Write ...."
@@ -98,15 +107,19 @@ const JournalCreateScreen = () => {
           />
         </View>
 
+        {/* TOOLBAR */}
         <JournalToolbar />
 
-        {/* Calendar Picker Modal */}
+        {/* DATE PICKER */}
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
           mode="date"
           date={selectedDate}
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
+          onConfirm={(date) => {
+            setSelectedDate(date);
+            setDatePickerVisible(false);
+          }}
+          onCancel={() => setDatePickerVisible(false)}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -115,17 +128,29 @@ const JournalCreateScreen = () => {
 
 export default JournalCreateScreen;
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#fffbf2" },
-  container: { flex: 1, backgroundColor: "#fffbf2" },
+/* ================= STYLES ================= */
 
-  header: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
     backgroundColor: "#fffbf2",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#fffbf2",
+  },
+
+  headerSaveText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1C1C1E",
+  },
+
+  body: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 80,
   },
   saveButton: {
     backgroundColor: "#C3E8A9",
@@ -134,29 +159,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   saveText: { fontSize: 16, fontWeight: "600", color: "#1C1C1E" },
-
-  body: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 80,
-  },
-
   /* DATE */
   dateRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 16,
   },
   dateNumber: {
-    fontSize: 32,
+    fontSize: 22,
     fontWeight: "bold",
     marginRight: 6,
     color: "#4A4A4A",
   },
   dateText: {
-    fontSize: 17,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "400",
     color: "#4A4A4A",
     marginRight: 6,
   },
@@ -166,8 +183,8 @@ const styles = StyleSheet.create({
 
   /* TITLE */
   titleInput: {
-    fontSize: 26,
-    fontWeight: "700",
+    fontSize: 20,
+    fontWeight: "600",
     color: "#1C1C1E",
     marginBottom: 12,
     padding: 0,
@@ -176,7 +193,7 @@ const styles = StyleSheet.create({
   /* CONTENT */
   contentInput: {
     flex: 1,
-    fontSize: 18,
+    fontSize: 16,
     color: "#1C1C1E",
     padding: 0,
     lineHeight: 28,

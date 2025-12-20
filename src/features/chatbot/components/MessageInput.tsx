@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#E4E6EB",
     backgroundColor: "#fff",
     alignItems: "center",
-    marginBottom:70
+    // marginBottom:70
   },
   recordBtn: {
     marginRight: 12,

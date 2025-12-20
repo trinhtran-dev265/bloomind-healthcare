@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
 
   banner: {
     width:  '100%',
-    height: 240,
+    height: 180,
     resizeMode: "cover",
     alignSelf: "center",
     marginBottom:20,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginVertical: 10,
+    marginVertical: 0,
     gap: 20,
   },
 
@@ -162,9 +162,9 @@ const styles = StyleSheet.create({
 
   card: {
     backgroundColor: "white",
-    marginHorizontal: 20,
+    marginHorizontal: 16,
     marginTop: 18,
-    padding: 18,
+    padding: 16,
     borderRadius: 20,
     // shadowColor: "#000",
     // shadowOpacity: 0.1,
@@ -176,11 +176,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    marginBottom: 6,
+    marginBottom: 2,
   },
 
   dayText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "700",
     color: "#2E2E2E",
   },
@@ -192,22 +192,22 @@ const styles = StyleSheet.create({
   },
 
   cardTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
-    marginTop: 6,
+    marginTop: 4,
     color: "#3A3A3A",
   },
 
   cardContent: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#6A6A6A",
-    marginVertical: 10,
+    marginTop: 4,
     lineHeight: 20,
   },
 
   thumb: {
-    width: 100,
-    height: 100,
+    width: 60,
+    height: 60,
     borderRadius: 12,
     resizeMode: "cover",
     marginTop: 10,

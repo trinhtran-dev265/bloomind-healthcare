@@ -76,22 +76,28 @@ export const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="Journal"
         component={JournalHomeScreen}
-        options={{ title: 'Journal Home' }}
+        options={{ title: 'Journal' }}
       />
       <Stack.Screen
         name="JournalDetail"
         component={JournalDetailScreen}
-        options={{ title: 'Journal Detail' }}
+        options={{
+          headerShown: true,
+        }}
       />
       <Stack.Screen
         name="JournalCreate"
         component={JournalCreateScreen}
-        options={{ title: 'Journal Create' }}
+        options={{
+          headerShown: true,
+        }}
       />
       <Stack.Screen
         name="JournalEdit"
         component={JournalEditScreen}
-        options={{ headerShown: false, }}
+        options={{
+          headerShown: false,
+        }}
       />
 
       <Stack.Screen
