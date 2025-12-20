@@ -19,7 +19,6 @@ export const seedActivitiesIfNeeded = async (uid: string) => {
     await setDoc(doc(activitiesRef, item.id), {
       label: item.label,
       icon: item.icon,
-      color: item.color,
       createdAt: new Date(),
       isDefault: true,
     });

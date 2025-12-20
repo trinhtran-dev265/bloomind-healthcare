@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+// import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import {
@@ -22,16 +22,16 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-let analytics: ReturnType<typeof getAnalytics> | undefined;
-if (typeof window !== "undefined") {
-  try {
-    analytics = getAnalytics(app);
-  } catch (err) {
-    console.warn("Firebase analytics not initialized:", (err as Error).message);
-  }
-}
+// let analytics: ReturnType<typeof getAnalytics> | undefined;
+// if (typeof window !== "undefined") {
+//   try {
+//     analytics = getAnalytics(app);
+//   } catch (err) {
+//     console.warn("Firebase analytics not initialized:", (err as Error).message);
+//   }
+// }
 const firestore = getFirestore(app);
 const auth = getAuth(app);
 
-export { app, auth, firestore, analytics };
+export { app, auth, firestore};
 export default app;
