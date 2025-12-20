@@ -113,7 +113,7 @@ const AddActivityModal = ({ visible, onClose, onAdd }: Props) => {
           </ScrollView>
 
           {/* Color List */}
-          <Text style={styles.subTitle}>Chọn màu:</Text>
+          {/* <Text style={styles.subTitle}>Chọn màu:</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -130,7 +130,7 @@ const AddActivityModal = ({ visible, onClose, onAdd }: Props) => {
                 ]}
               />
             ))}
-          </ScrollView>
+          </ScrollView> */}
 
           {/* Buttons */}
           <View style={styles.actions}>

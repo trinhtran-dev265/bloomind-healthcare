@@ -14,6 +14,13 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../app/navigation/types";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from "@react-navigation/native";
+import { getAuth } from "firebase/auth";
+import { doc, getDoc, getDocs, collection, query, where, limit, } from "firebase/firestore";
+import { firestore } from "../../../services/firebase/firebaseConfig";
+import { moodData } from "../../mood/utils/moodData";
+import { getTodayKey } from "../../../utils/date";
+import MoodTodayCard from "../components/MoodTodayCard";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
@@ -21,6 +28,93 @@ export const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { width, height } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
+
+  const [userInfo, setUserInfo] = React.useState<{
+    name: string;
+    avatar?: string;
+  } | null>(null);
+
+  const todayText = new Date().toLocaleDateString("en-US", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+
+  const [todayMood, setTodayMood] = React.useState<{
+    id: string;
+    label: string;
+    detailMoods?: string[];
+  } | null>(null);
+
+
+  const todayMoodItem = todayMood
+    ? moodData.find((m) => m.id === todayMood.id)
+    : null;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      let mounted = true;
+
+      const loadTodayMood = async () => {
+        const user = getAuth().currentUser;
+        if (!user) {
+          if (mounted) setTodayMood(null);
+          return;
+        }
+
+        const todayKey = getTodayKey();
+
+        const q = query(
+          collection(firestore, "users", user.uid, "moodLogs"),
+          where("date", "==", todayKey),
+          limit(1)
+        );
+
+        const snapshot = await getDocs(q);
+
+        if (!mounted) return;
+
+        if (!snapshot.empty) {
+          const data = snapshot.docs[0].data();
+          setTodayMood({
+            id: data.moodId,
+            label: data.moodLabel,
+            detailMoods: data.detailMoods || [],
+          });
+        } else {
+          setTodayMood(null);
+        }
+      };
+
+      loadTodayMood();
+
+      return () => {
+        mounted = false;
+      };
+    }, [])
+  );
+
+
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      const user = getAuth().currentUser;
+      if (!user) return;
+
+      const snap = await getDoc(doc(firestore, "users", user.uid));
+      if (snap.exists()) {
+        const data = snap.data();
+        setUserInfo({
+          name: data.displayName || "User",
+          avatar: data.avatar,
+        });
+      }
+    };
+
+    loadUserInfo();
+  }, []);
+
 
   // floating animation for mascot
   const floatAnim = useRef(new Animated.Value(0)).current;
@@ -42,8 +136,9 @@ export const HomeScreen: React.FC = () => {
   const ACTIONS_EST = 110;
   const BOTTOM_NAV_EST = isWeb ? 110 : 90;
   const EXTRA_SPACING = 20;
+  const MOOD_CARD_EST = 150;
 
-  const availableHeightForMascot = Math.max(0, height - (HEADER_EST + ACTIONS_EST + BOTTOM_NAV_EST + EXTRA_SPACING));
+  const availableHeightForMascot = Math.max(0, height - (HEADER_EST + MOOD_CARD_EST + ACTIONS_EST + BOTTOM_NAV_EST + EXTRA_SPACING));
 
   const webMax = 700;
   const byWidth = Math.round(width * 0.85);
@@ -73,14 +168,20 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.headerRow}>
           <View style={styles.leftHeader}>
             <Image
-              source={require("../../../../assets/images/avatar.png")}
+              source={
+                userInfo?.avatar
+                  ? { uri: userInfo.avatar }
+                  : require("../../../assets/images/avatar.png")
+              }
               style={styles.avatar}
             />
             <View style={styles.greetingWrap}>
-              <Text style={styles.dateText}>Thur, 13 Feb 2025</Text>
+              <Text style={styles.dateText}>{todayText}</Text>
               <View style={styles.nameRow}>
-                <Text style={styles.nameText}>Hey Trinh!</Text>
-                <Text style={styles.xpText}> 200/1000 EXP</Text>
+                <Text style={styles.nameText}>
+                  Hey {userInfo?.name}!
+                </Text>
+                {/* <Text style={styles.xpText}> 200/1000 EXP</Text> */}
               </View>
             </View>
           </View>
@@ -96,23 +197,32 @@ export const HomeScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
+        <MoodTodayCard
+          todayMood={todayMood}
+          onPressEmpty={() => navigation.navigate("MoodTracking")}
+          onEdit={() =>
+            navigation.navigate("MoodTracking", { mode: "edit" })
+          }
+        />
+
+
         {/* three action circles */}
         <View style={styles.topActions}>
           <ActionCircle
             label="Journal"
-            img={require("../../../../assets/images/journal.png")}
+            img={require("../../../assets/images/journal.png")}
             onPress={() => navigation.navigate("Journal")}
             actionWidth={Math.floor((width - 40) / 3)}
           />
           <ActionCircle
-            label="Mood tracking"
-            img={require("../../../../assets/images/moodtracking.png")}
-            onPress={() => navigation.navigate("MoodTracking")}
+            label="Analysis"
+            img={require("../../../assets/images/moodtracking.png")}
+            onPress={() => navigation.navigate("Analysis")}
             actionWidth={Math.floor((width - 40) / 3)}
           />
           <ActionCircle
             label="Chatbot"
-            img={require("../../../../assets/images/chatbot.png")}
+            img={require("../../../assets/images/chatbot.png")}
             onPress={() => navigation.navigate("Chatbot")}
             actionWidth={Math.floor((width - 40) / 3)}
           />
@@ -132,7 +242,7 @@ export const HomeScreen: React.FC = () => {
             }}
           >
             <Image
-              source={require("../../../../assets/images/mascot.png")}
+              source={require("../../../assets/images/mascot.png")}
               style={{
                 width: mascotWidth,
                 height: mascotMaxHeight,
@@ -207,6 +317,8 @@ const ActionCircle: React.FC<ActionCircleProps> = ({ label, img, onPress, action
   );
 };
 
+export default HomeScreen;
+
 const BG = "#FFFBF2";
 const ACCENT = "#6AA84F";
 
@@ -222,6 +334,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  /* ---------- Header ---------- */
   headerRow: {
     width: "100%",
     flexDirection: "row",
@@ -229,13 +342,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
-  leftHeader: { flexDirection: "row", alignItems: "center" },
-
+  leftHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   avatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    borderWidth: 0,
     backgroundColor: "#E6F4E9",
   },
   greetingWrap: {
@@ -255,11 +369,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#2E5F2E",
   },
-  xpText: {
-    fontSize: 12,
-    color: "#A0A0A0",
-  },
-
   fireBtn: {
     width: 44,
     height: 44,
@@ -269,6 +378,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(140,200,120,0.12)",
   },
 
+  /* ---------- Top Actions ---------- */
   topActions: {
     marginTop: 14,
     width: "100%",
@@ -310,6 +420,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  /* ---------- Mascot ---------- */
   mascotContainer: {
     flex: 1,
     width: "100%",
@@ -317,6 +428,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
 
+  /* ---------- Bottom Navigation ---------- */
   bottomNavWrap: {
     position: "absolute",
     left: 0,
@@ -353,7 +465,7 @@ const styles = StyleSheet.create({
 
   fabContainer: {
     position: "absolute",
-    top: -28, // half of FAB size to overlap
+    top: -28,
   },
   fab: {
     width: 56,
@@ -373,5 +485,3 @@ const styles = StyleSheet.create({
     }),
   },
 });
-
-export default HomeScreen;

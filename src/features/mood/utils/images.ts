@@ -1,14 +1,14 @@
 export const Images = {
   avatars: {
-    done: require("../assets/images/done.png"),
+    done: require("../../../assets/mood/done.png"),
   },
 
   mood: {
-    happy: require("../assets/images/mood/happy.png"),
-    sad: require("../assets/images/mood/sad.png"),
-    peaceful: require("../assets/images/mood/peaceful.png"),
-    neutral: require("../assets/images/mood/neutral.png"),
-    anxious: require("../assets/images/mood/anxious.png"),
+    happy: require("../../../assets/mood/happy.png"),
+    sad: require("../../../assets/mood/sad.png"),
+    peaceful: require("../../../assets/mood/peaceful.png"),
+    neutral: require("../../../assets/mood/neutral.png"),
+    anxious: require("../../../assets/mood/anxious.png"),
   },
 
 };

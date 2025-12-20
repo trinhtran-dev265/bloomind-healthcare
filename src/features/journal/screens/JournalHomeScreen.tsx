@@ -124,7 +124,7 @@ const renderJournalCard = (
 // Styles
 // -------------------------------
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FAF8F0" },
+  container: { flex: 1, backgroundColor: "#fffbf2" },
 
   header: {
     height: 55,
@@ -138,18 +138,19 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: "600", color: "#373737" },
 
   banner: {
-    width: isWeb ? '50%' : '100%',
+    width:  '100%',
     height: 240,
     resizeMode: "cover",
     alignSelf: "center",
-    borderRadius: 16,
+    marginBottom:20,
+    // borderRadius: 16,
   },
 
   yearRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
+    marginVertical: 10,
     gap: 20,
   },
 
@@ -165,9 +166,9 @@ const styles = StyleSheet.create({
     marginTop: 18,
     padding: 18,
     borderRadius: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
+    // shadowColor: "#000",
+    // shadowOpacity: 0.1,
+    // shadowRadius: 6,
     elevation: 3,
   },
 

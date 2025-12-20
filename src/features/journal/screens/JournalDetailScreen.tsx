@@ -46,7 +46,7 @@ export default JournalDetailScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#faf7ef',
+    backgroundColor: '#fffbf2',
     padding: 20,
   },
   header: {

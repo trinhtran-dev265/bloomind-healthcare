@@ -20,7 +20,7 @@ export default function AnalysisScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#f5f7fa", padding: 16 }}>
+    <View style={{ flex: 1, backgroundColor: "#fffbf2", padding: 16 }}>
       {/* Tabs */}
       <View style={styles.tabContainer}>
         <TouchableOpacity
@@ -54,9 +54,9 @@ export default function AnalysisScreen() {
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: "#f2f3f5",
+    backgroundColor: "#ffffffff",
     borderRadius: 25,
-    padding: 4,
+    // padding: 4,
   },
   tab: {
     flex: 1,
@@ -65,7 +65,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   activeTab: {
-    backgroundColor: "white",
+    backgroundColor: "#f1ffc8ff",
+    // borderWidth:1
   },
   tabText: {
     color: "#4a4a4a",
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   activeTabText: {
-    color: "#0c3d36",
-    fontWeight: "600",
+    color: "#1a620dff",
+    fontWeight: "700",
   },
 });

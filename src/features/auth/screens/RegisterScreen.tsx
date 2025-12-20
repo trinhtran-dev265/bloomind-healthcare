@@ -5,6 +5,7 @@ import { auth, firestore } from '../../../services/firebase/firebaseConfig';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../app/navigation/types';
 import { doc, setDoc } from "firebase/firestore";
+import { seedActivitiesIfNeeded } from "../../mood/services/seedActivities";
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Register'>;
@@ -34,6 +35,9 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         provider: "email",
         role: "user",
       });
+
+      // Seed activities mặc định
+      await seedActivitiesIfNeeded(res.user.uid);
 
       Alert.alert("Thành công", "Tài khoản đã được tạo");
       navigation.replace("EmailLogin");
