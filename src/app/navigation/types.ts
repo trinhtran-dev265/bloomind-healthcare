@@ -7,12 +7,11 @@ export type RootStackParamList = {
   Profile: undefined;
 
   MoodTracking: {
-    mode?: string;
+    mode?: "edit";
   } | undefined;
   Activities: {
     moodId?: string;
-    moodLabel?: string;
-    mode?: string;
+    mode?: "edit";
   }| undefined;
   MoodTrackingSaved: undefined;
 

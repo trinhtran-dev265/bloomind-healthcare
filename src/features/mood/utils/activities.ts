@@ -17,13 +17,13 @@ export const ACTIVITIES: ActivityItem[] = [
   { id: "deadline", label: "Deadline", icon: "alert-circle" },
 
   { id: "game", label: "Game", icon: "monitor" },
-  { id: "party", label: "Tiệc", icon: "sunny" },
+  { id: "party", label: "Tiệc", icon: "sun" },
 
-  { id: "cooking", label: "Nấu ăn", icon: "restaurant" },
+  { id: "cooking", label: "Nấu ăn", icon: "coffee" },
   { id: "movie", label: "Xem phim", icon: "film" },
 
-  { id: "music", label: "Nghe nhạc", icon: "headset" },
-  { id: "meditation", label: "Thiền", icon: "leaf" },
+  { id: "music", label: "Nghe nhạc", icon: "music" },
+  { id: "meditation", label: "Thiền", icon: "wind" },
 
   { id: "travel", label: "Du lịch", icon: "map" },
 ];

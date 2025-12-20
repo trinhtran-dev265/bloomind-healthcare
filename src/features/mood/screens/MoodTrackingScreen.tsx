@@ -7,38 +7,56 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp, } from "@react-navigation/native";
 import { moodData, MoodItem } from "../utils/moodData";
-import { auth } from "../../../services/firebase/firebaseConfig";
 import { getMoodLogByDate } from "../services/moodLogService";
 import { getTodayKey } from "../../../utils/date";
+import { MoodLog } from "../services/moodLogService";
+import { RootStackParamList } from "../../../app/navigation/types";
+import { auth, firestore } from "../../../services/firebase/firebaseConfig";
+import { doc, getDoc } from "firebase/firestore";
+import dayjs from "dayjs";
 
-const MoodTrackingScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
+type RouteProps = RouteProp<RootStackParamList, "MoodTracking">;
 
-  const { mode } = (route.params || {}) as { mode?: "edit" };
+export const MoodTrackingScreen = ({ navigation }: any) => {
+  // const navigation = useNavigation();
+  // const route = useRoute();
+  const route = useRoute<RouteProps>();
+  const mode = route.params?.mode;
+
+  // const { mode } = (route.params || {}) as { mode?: "edit" };
 
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
   useEffect(() => {
     if (mode !== "edit") return;
 
-    const user = auth.currentUser;
-    if (!user) return;
+    const loadTodayMood = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
 
-    const uid = user.uid;
+      const todayKey = dayjs().format("YYYY-MM-DD");
+      const ref = doc(firestore, "users", user.uid, "moodLogs", todayKey);
+      const snap = await getDoc(ref);
 
-    const load = async () => {
-      const todayKey = getTodayKey();
-      const log = await getMoodLogByDate(uid, todayKey);
-      if (log) {
-        setSelectedMood(log.moodId);
+      if (snap.exists()) {
+        const data = snap.data();
+        setSelectedMood(data.moodId);
       }
     };
 
-    load();
+    loadTodayMood();
   }, [mode]);
+
+  const handleNext = () => {
+    if (!selectedMood) return;
+
+    navigation.navigate("Activities", {
+      moodId: selectedMood,
+      mode, // 🔥 truyền mode
+    });
+  };
 
   const currentMood: MoodItem | undefined =
     moodData.find((m) => m.id === selectedMood);
@@ -130,13 +148,13 @@ const styles = StyleSheet.create({
   },
 
   selectedIcon: {
-    width: 160,
-    height: 110,
+    // width: 160,
+    height: 150,
     resizeMode: "contain",
   },
 
   selectedLabel: {
-    marginTop: 10,
+    // marginTop: 10,
     fontSize: 18,
     fontWeight: "700",
     color: "#333",
@@ -177,6 +195,7 @@ const styles = StyleSheet.create({
 
   iconWrapperActive: {
     backgroundColor: "#fff",
+    borderRadius: 50
   },
 
   icon: {
@@ -193,7 +212,7 @@ const styles = StyleSheet.create({
   },
 
   activeMood: {
-    color: "#145611",
+    color: "#000000ff",
     fontWeight: "700",
   },
 
