@@ -107,9 +107,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   titleInput: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "600",
-    marginBottom: 15,
+    // marginBottom: 15,
     color: "#1C1C1E",
   },
   textInput: {
