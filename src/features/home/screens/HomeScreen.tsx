@@ -199,10 +199,25 @@ export const HomeScreen: React.FC = () => {
 
         <MoodTodayCard
           todayMood={todayMood}
-          onPressEmpty={() => navigation.navigate("MoodTracking")}
-          onEdit={() =>
-            navigation.navigate("MoodTracking", { mode: "edit" })
+          onPressEmpty={() =>
+            navigation.navigate({
+              name: "MoodTracking",
+              params: {
+                mode: "create",
+                date: getTodayKey(), 
+              },
+            })
           }
+          onEdit={() =>
+            navigation.navigate({
+              name: "MoodTracking",
+              params: {
+                mode: "edit",
+                date: getTodayKey(), 
+              },
+            })
+          }
+
         />
 
 

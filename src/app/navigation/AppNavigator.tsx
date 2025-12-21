@@ -126,7 +126,9 @@ export const AppNavigator: React.FC = () => {
       <Stack.Screen
         name="MoodHistory"
         component={MoodHistoryScreen}
-        options={{ title: 'Mood History' }}
+        options={{
+          headerShown: false,
+        }}
       />
 
     </Stack.Navigator>

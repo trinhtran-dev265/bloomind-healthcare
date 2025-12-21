@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "#ffffffff",
     borderRadius: 25,
-    // padding: 4,
+    padding: 4,
   },
   tab: {
     flex: 1,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   activeTab: {
-    backgroundColor: "#f1ffc8ff",
+    backgroundColor: "#535353ff",
     // borderWidth:1
   },
   tabText: {
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   activeTabText: {
-    color: "#1a620dff",
-    fontWeight: "700",
+    color: "#ffffffff",
+    fontWeight: "600",
   },
 });

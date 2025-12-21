@@ -105,6 +105,8 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowRadius: 4,
+    borderWidth:1,
+    borderColor:'#e4e4e4ff',
   },
 
   headerRow: {
