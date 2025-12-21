@@ -9,9 +9,6 @@ import {
 } from "react-native";
 import { useNavigation, useRoute, RouteProp, } from "@react-navigation/native";
 import { moodData, MoodItem } from "../utils/moodData";
-import { getMoodLogByDate } from "../services/moodLogService";
-import { getTodayKey } from "../../../utils/date";
-import { MoodLog } from "../services/moodLogService";
 import { RootStackParamList } from "../../../app/navigation/types";
 import { auth, firestore } from "../../../services/firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
@@ -24,30 +21,30 @@ export const MoodTrackingScreen = ({ navigation }: any) => {
   // const route = useRoute();
   const route = useRoute<RouteProps>();
   const mode = route.params?.mode;
+  const date = route.params?.date;
 
   // const { mode } = (route.params || {}) as { mode?: "edit" };
 
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
   useEffect(() => {
-    if (mode !== "edit") return;
+    if (mode !== "edit" || !date) return;
 
-    const loadTodayMood = async () => {
+    const loadMood = async () => {
       const user = auth.currentUser;
       if (!user) return;
 
-      const todayKey = dayjs().format("YYYY-MM-DD");
-      const ref = doc(firestore, "users", user.uid, "moodLogs", todayKey);
+      const ref = doc(firestore, "users", user.uid, "moodLogs", date);
       const snap = await getDoc(ref);
 
       if (snap.exists()) {
-        const data = snap.data();
-        setSelectedMood(data.moodId);
+        setSelectedMood(snap.data().moodId);
       }
     };
 
-    loadTodayMood();
-  }, [mode]);
+    loadMood();
+  }, [mode, date]);
+
 
   const handleNext = () => {
     if (!selectedMood) return;
@@ -122,6 +119,7 @@ export const MoodTrackingScreen = ({ navigation }: any) => {
             moodId: currentMood.id,
             moodLabel: currentMood.label,
             mode,
+            date,
           });
         }}
       >
