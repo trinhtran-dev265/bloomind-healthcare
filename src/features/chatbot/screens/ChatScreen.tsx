@@ -1,18 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   FlatList,
   Text,
-  SafeAreaView,
   StyleSheet,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import ChatBubble from "../components/ChatBubble";
 import MessageInput from "../components/MessageInput";
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import {
+  createConversation,
+  saveMessage,
+  getRecentMessages,
+  sendMessageToAI,
+  getAllMessages,
+} from "../services/chat.service";
+import { auth } from "../../../services/firebase/firebaseConfig";
+import { RootStackParamList } from "../types/chatbot";
 
 interface Msg {
   id: string;
@@ -22,31 +31,105 @@ interface Msg {
 
 const ChatScreen = () => {
   const navigation = useNavigation();
+  const flatListRef = useRef<FlatList>(null);
 
-  const [messages, setMessages] = useState<Msg[]>([
-    { id: "1", text: "I'm really sorry to hear that…", sender: "bot" },
-    { id: "2", text: "I'm lonely and it's painful.", sender: "user" },
-  ]);
+  const uid = auth.currentUser?.uid;
+  type ChatRouteProp = RouteProp<RootStackParamList, "Chatbot">;
 
-  const [typing, setTyping] = useState(false);
+  const route = useRoute<ChatRouteProp>();
 
-  const onSend = (msg: string) => {
-    const newMsg: Msg = { id: Date.now().toString(), text: msg, sender: "user" };
-    setMessages((prev) => [...prev, newMsg]);
+  const initialConversationId =
+    route.params?.conversationId ?? null;
 
+  const [conversationId, setConversationId] = useState<string | null>(
+    initialConversationId
+  );
+
+    const [messages, setMessages] = useState<Msg[]>([]);
+    const [typing, setTyping] = useState(false);
+
+  useEffect(() => {
+    if (!uid || !conversationId) return;
+
+    const loadHistory = async () => {
+      try {
+        const history = await getAllMessages(uid, conversationId);
+        setMessages(history);
+      } catch (err) {
+        console.warn("Failed to load chat history", err);
+      }
+    };
+
+    loadHistory();
+  }, [uid, conversationId]);
+
+
+  // Auto scroll
+  useEffect(() => {
+    flatListRef.current?.scrollToEnd({ animated: true });
+  }, [messages, typing]);
+
+  const onSend = async (text: string) => {
+    if (!uid || !text.trim()) return;
+
+    const userMsg: Msg = {
+      id: Date.now().toString(),
+      text,
+      sender: "user",
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
     setTyping(true);
 
-    setTimeout(() => {
+    try {
+      let convoId = conversationId;
+
+      // 1️⃣ Create conversation if needed
+      if (!convoId) {
+        convoId = await createConversation(uid, text);
+        setConversationId(convoId);
+      }
+
+      // 2️⃣ Save user message
+      await saveMessage(uid, convoId, "user", text, "system");
+
+      // 3️⃣ Get recent history
+      const history = await getRecentMessages(uid, convoId);
+
+      // 4️⃣ Call AI
+      const res = await sendMessageToAI(text, history);
+
+      // 5️⃣ Save AI reply
+      await saveMessage(
+        uid,
+        convoId,
+        "assistant",
+        res.reply,
+        res.degraded ? "degraded" : "ai"
+      );
+
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
-          text: "Loneliness can indeed make us feel vulnerable…",
+          text: res.reply,
           sender: "bot",
         },
       ]);
+    } catch (err) {
+      // ❗ System-safe fallback (not fake empathy)
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 2).toString(),
+          text:
+            "Bloomie is having technical trouble right now. This isn't your fault. Please try again later.",
+          sender: "bot",
+        },
+      ]);
+    } finally {
       setTyping(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -64,13 +147,16 @@ const ChatScreen = () => {
 
           <Text style={styles.title}>Chat with Bloomie</Text>
 
-          <TouchableOpacity onPress={() => navigation.navigate("ChatHistory" as never)}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ChatHistory" as never)}
+          >
             <Ionicons name="time-outline" size={24} color="#1C1C1E" />
           </TouchableOpacity>
         </View>
 
         {/* Messages */}
         <FlatList
+          ref={flatListRef}
           data={messages}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
@@ -82,7 +168,9 @@ const ChatScreen = () => {
         {/* Typing indicator */}
         {typing && (
           <View style={styles.typing}>
-            <Text style={styles.typingText}>Meowi is typing...</Text>
+            <Text style={styles.typingText}>
+              Bloomie is responding…
+            </Text>
           </View>
         )}
 
@@ -104,7 +192,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomColor: "#E5E5EA",
     borderBottomWidth: 1,
-    backgroundColor:'#fff',
+    backgroundColor: "#fff",
   },
   title: { fontSize: 17, fontWeight: "600" },
   typing: { paddingLeft: 20, paddingVertical: 6 },

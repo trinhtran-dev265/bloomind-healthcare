@@ -1,49 +1,88 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   FlatList,
   TouchableOpacity,
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { collection, query, orderBy, getDocs } from "firebase/firestore";
+import { auth, firestore } from "../../../services/firebase/firebaseConfig";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types/chatbot";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-interface HistoryItem {
+interface Conversation {
   id: string;
   lastMessage: string;
-  timestamp: string;
+  updatedAt: string;
 }
-
-const historyData: HistoryItem[] = [
-  { id: "1", lastMessage: "You deserve friends who care…", timestamp: "Today • 9:41 AM" },
-  { id: "2", lastMessage: "Loneliness can indeed…", timestamp: "Yesterday • 10:12 PM" },
-  { id: "3", lastMessage: "Your emotions are valid…", timestamp: "3 days ago" },
-];
-
+type NavProp = NativeStackNavigationProp<RootStackParamList, "ChatHistory">;
 const ChatHistoryScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavProp>();
+  const uid = auth.currentUser?.uid;
+  const [data, setData] = useState<Conversation[]>([]);
+
+  useEffect(() => {
+    if (!uid) return;
+
+    const load = async () => {
+      const q = query(
+        collection(firestore, "users", uid, "conversations"),
+        orderBy("updatedAt", "desc")
+      );
+
+      const snap = await getDocs(q);
+
+      const list = snap.docs.map((doc) => ({
+        id: doc.id,
+        lastMessage: doc.data().lastMessage,
+        updatedAt: doc.data().updatedAt?.toDate().toLocaleString(),
+      }));
+
+      setData(list);
+    };
+
+    load();
+  }, [uid]);
 
   return (
     <SafeAreaView style={styles.container}>
-
       <FlatList
-        data={historyData}
+        data={data}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16 }}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.item}>
-            <Image source={require("../assets/chatbotAvatar.png")} style={styles.avatar} />
+          <TouchableOpacity
+            style={styles.item}
+            onPress={() =>
+              navigation.navigate(
+                "Chatbot",
+                { conversationId: item.id } as never
+              )
+            }
+          >
+            <Image
+              source={require("../assets/chatbotAvatar.png")}
+              style={styles.avatar}
+            />
             <View style={{ flex: 1 }}>
-              <Text style={styles.title}>Conversation #{item.id}</Text>
+              <Text style={styles.title}>
+                A conversation about feelings
+              </Text>
               <Text numberOfLines={1} style={styles.lastMsg}>
                 {item.lastMessage}
               </Text>
-              <Text style={styles.time}>{item.timestamp}</Text>
+              <Text style={styles.time}>{item.updatedAt}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#C6C6C8" />
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color="#C6C6C8"
+            />
           </TouchableOpacity>
         )}
       />
@@ -55,21 +94,11 @@ export default ChatHistoryScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fffbf2" },
-  header: {
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#e9e9ffff",
-  },
-  headerTitle: { fontSize: 17, fontWeight: "600" },
-
   item: {
     flexDirection: "row",
     padding: 16,
     marginBottom: 14,
-    backgroundColor: "#ffffffff",
+    backgroundColor: "#fff",
     borderRadius: 16,
     alignItems: "center",
   },
