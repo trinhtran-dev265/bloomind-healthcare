@@ -56,7 +56,7 @@ export default function MoodYearMiniMonths({ year, moodByYear, streak, onPressMo
     while (cells.length % 7 !== 0) cells.push(null);
 
     const dotColor = (cell: MoodByDay | null) => {
-      if (!cell) return "#F3F4F6";
+      if (!cell) return "#fff";
       if (!cell.moodId) return "#EEF2FF";
       const m = moodData.find((mm) => mm.id === cell.moodId);
       return (m && m.color) || "#D1D5DB";

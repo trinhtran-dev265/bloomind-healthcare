@@ -8,23 +8,28 @@ export interface MoodLogPayload {
   detailMoods?: string[];
   activities?: string[];
   note?: string;
+  date: string;
 }
 
 export const saveOrUpdateMoodLog = async (
   uid: string,
   data: MoodLogPayload
 ) => {
-  const todayKey = dayjs().format("YYYY-MM-DD");
-
-  const ref = doc(firestore, "users", uid, "moodLogs", todayKey);
+  const ref = doc(
+    firestore,
+    "users",
+    uid,
+    "moodLogs",
+    data.date // 🔥 dùng ngày được chọn
+  );
 
   await setDoc(
     ref,
     {
       ...data,
-      date: todayKey,
       updatedAt: serverTimestamp(),
     },
-    { merge: true } // 🔥 CREATE hoặc UPDATE đều OK
+    { merge: true }
   );
 };
+

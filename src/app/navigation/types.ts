@@ -6,17 +6,23 @@ export type RootStackParamList = {
   Register: undefined;
   Profile: undefined;
 
-  MoodTracking: {
-    mode?: "edit";
-  } | undefined;
+ MoodTracking: {
+    mode?: "edit" | "create";
+    date?: string; // YYYY-MM-DD
+  };
   Activities: {
-    moodId?: string;
-    mode?: "edit";
-  }| undefined;
+    moodId: string;
+    moodLabel?: string;
+    mode?: "edit" | "create";
+    date?: string;
+  };
+  MoodHistory: {
+    date: string;
+  };
   MoodTrackingSaved: undefined;
 
   Analysis: undefined;
-  MoodHistory: undefined;
+  // MoodHistory: undefined;
   MonthDetail: undefined;
 
   JournalDetail: undefined;

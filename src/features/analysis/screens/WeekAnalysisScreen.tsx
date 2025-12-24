@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ScrollView, View } from "react-native";
 
 import MoodSummaryCard from "../components/MoodSummaryCard";
@@ -8,13 +8,16 @@ import MoodChangeChart from "../components/MoodChangeChart";
 import MoodActivityCard from "../components/MoodActivityCard";
 import PeriodSelector from "../components/PeriodSelector";
 
-import { analysisData } from "../utils/analysisData";
 import { moodData } from "../utils/moodData";
-
-interface LastMoodData {
-  moodId: string;
-  activities: { id: string; count: number; percent: number }[];
-}
+import { auth } from "../../../services/firebase/firebaseConfig";
+import { getWeekStreak } from "../services/streakService";
+import { StreakData, MoodSummaryData } from "../types/analysis.types";
+import { getWeekMoodChange } from "../services/moodChangeService";
+import { getMoodSummary } from "../services/moodSummaryService";
+import { getTrendByRange } from "../services/trendService";
+import { TrendData } from "../types/analysis.types";
+import { getTrendWithCompare } from "../services/trendService";
+import { getMoodActivityByRange } from "../services/moodActivityService";
 
 interface MoodActivityItem {
   moodId: string;
@@ -33,10 +36,22 @@ function getMonday(date: Date) {
 const formatDate = (d: Date) => `${d.getDate()}/${d.getMonth() + 1}`;
 
 export default function WeekAnalysisScreen() {
-  const data = analysisData;
+  const [weekStreak, setWeekStreak] = useState<StreakData | null>(null);
+  const [moodChange, setMoodChange] = useState<{
+    values: number[];
+    average: number;
+    stableRate: number;
+  } | null>(null);
+  const [moodSummary, setMoodSummary] =
+    useState<MoodSummaryData | null>(null);
 
   const [offset, setOffset] = useState(0);
+  const [trend, setTrend] = useState<TrendData | null>(null);
 
+  const [moodActivities, setMoodActivities] =
+    useState<MoodActivityItem[]>([]);
+
+  /* ================== TÍNH TUẦN ================== */
   const { start, end } = useMemo(() => {
     const mondayThisWeek = getMonday(new Date());
     const s = new Date(mondayThisWeek);
@@ -50,39 +65,78 @@ export default function WeekAnalysisScreen() {
 
   const label = useMemo(() => {
     let l = `${formatDate(start)} - ${formatDate(end)}`;
-    if (offset === 0) l = `Tuần này (${l})`;
-    else if (offset === 1) l = `Tuần trước (${l})`;
-    else l = `Tuần cách đây ${offset} tuần (${l})`;
-
-    return l;
+    if (offset === 0) return `Tuần này (${l})`;
+    if (offset === 1) return `Tuần trước (${l})`;
+    return `Cách đây ${offset} tuần (${l})`;
   }, [start, end, offset]);
 
-  const moodActivityData: MoodActivityItem[] = useMemo(() => {
-    return (data.lastMoods ?? []).map((item) => {
-      const mood = moodData.find((m) => m.id === item.moodId);
-      return {
-        moodId: item.moodId,
-        label: mood?.label ?? item.moodId,
-        activities: item.activities,
-      };
-    });
-  }, [data.lastMoods]);
+  const prevStart = new Date(start);
+  prevStart.setDate(start.getDate() - 7);
 
+  const prevEnd = new Date(end);
+  prevEnd.setDate(end.getDate() - 7);
+
+
+  /* ================== DATA ================== */
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    getWeekStreak(user.uid, start).then(setWeekStreak);
+    getWeekMoodChange(user.uid, offset).then(setMoodChange);
+    getMoodSummary(user.uid, start, end).then(setMoodSummary);
+    getTrendWithCompare(
+      user.uid,
+      start,
+      end,
+      prevStart,
+      prevEnd
+    ).then(setTrend);
+
+    getMoodActivityByRange(user.uid, start, end)
+      .then(setMoodActivities);
+  }, [offset, start, end]);
+
+  /* ================== MAP DATA ================== */
+  // const moodActivityData: MoodActivityItem[] = useMemo(() => {
+  //   if (!moodSummary) return [];
+
+  //   return moodSummary.moodActivities.map((item) => {
+  //     const mood = moodData.find((m) => m.id === item.moodId);
+  //     return {
+  //       moodId: item.moodId,
+  //       label: mood?.label ?? item.moodId,
+  //       activities: item.activities,
+  //     };
+  //   });
+  // }, [moodSummary]);
+
+  /* ================== UI ================== */
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-        <PeriodSelector
-          label={label}
-          onPrev={() => setOffset((v) => v + 1)}
-          onNext={() => setOffset((v) => Math.max(0, v - 1))}
+      <PeriodSelector
+        label={label}
+        onPrev={() => setOffset((v) => v + 1)}
+        onNext={() => setOffset((v) => Math.max(0, v - 1))}
+      />
+
+      <View style={{ height: 16 }} />
+
+      {weekStreak && <StreakCard streak={weekStreak} />}
+
+      {moodChange && (
+        <MoodChangeChart
+          data={moodChange}
+          weekStartDate={start}
         />
+      )}
 
-        <View style={{ height: 16 }} />
+      {moodSummary && <MoodSummaryCard data={moodSummary} />}
+      {trend && <TrendCard trend={trend} />}
+      {moodActivities.length > 0 && (
+        <MoodActivityCard data={moodActivities} />
+      )}
 
-        <StreakCard streak={data.streak} />
-        <MoodChangeChart data={data.moodChange} />
-        <MoodSummaryCard data={data} />
-        <TrendCard trend={data.trend} />
-        <MoodActivityCard data={moodActivityData} />
     </ScrollView>
   );
 }

@@ -5,11 +5,63 @@ import Feather from "@expo/vector-icons/Feather";
 interface Props {
   trend: TrendData;
 }
+function TrendIndicator({
+  value,
+  direction,
+  goodWhenUp = true,
+}: {
+  value: number;
+  direction: "up" | "down" | "same";
+  goodWhenUp?: boolean;
+}) {
+  // ===== CASE: KHÔNG THAY ĐỔI =====
+  if (direction === "same") {
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Text
+          style={{
+            color: "#16A34A",
+            fontWeight: "600",
+          }}
+        >
+         = {value} ngày
+        </Text>
+      </View>
+    );
+  }
+
+  // ===== CASE: TĂNG / GIẢM =====
+  const isGood =
+    (direction === "up" && goodWhenUp) ||
+    (direction === "down" && !goodWhenUp);
+
+  const color = isGood ? "#16A34A" : "#DC2626";
+
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <Feather
+        name={direction === "up" ? "arrow-up" : "arrow-down"}
+        size={14}
+        color={color}
+      />
+      <Text
+        style={{
+          marginLeft: 4,
+          color,
+          fontWeight: "600",
+        }}
+      >
+        {value} ngày
+      </Text>
+    </View>
+  );
+}
+
 
 export default function TrendCard({ trend }: Props) {
   return (
     <View style={styles.card}>
-      
+
       <View style={styles.headerRow}>
         <Feather name="smile" size={18} />
         <Text style={styles.title}>Xu hướng tổng thể</Text>
@@ -33,24 +85,24 @@ export default function TrendCard({ trend }: Props) {
       <View style={styles.bottomRow}>
         {/* Ngày tiêu cực */}
         <View style={styles.bottomBox}>
-          <Text style={styles.bottomTitle}>Những ngày tiêu cực</Text>
-          <Text style={styles.bottomValue}>{trend.negativeDays} ngày</Text>
+          
 
-          <View style={styles.changeRow}>
-            <Feather name="arrow-down-right" size={14} color="#ff6b57" />
-            <Text style={styles.changeText}>1 so với kỳ trước</Text>
-          </View>
+          <TrendIndicator
+            value={trend.negativeChange ?? 0}
+            direction={trend.negativeDirection ?? "same"}
+            goodWhenUp={false}
+          />
+          <Text style={styles.bottomTitle}>so với kỳ trước</Text>
         </View>
 
         {/* Ngày tích cực */}
         <View style={styles.bottomBox}>
-          <Text style={styles.bottomTitle}>Những ngày tích cực</Text>
-          <Text style={styles.bottomValue}>{trend.positiveDays} ngày</Text>
-
-          <View style={styles.changeRow}>
-            <Feather name="arrow-up-right" size={14} color="#4CAF50" />
-            <Text style={styles.changeText}>1 so với kỳ trước</Text>
-          </View>
+          <TrendIndicator
+            value={trend.positiveChange ?? 0}
+            direction={trend.positiveDirection ?? "same"}
+            goodWhenUp
+          />
+          <Text style={styles.bottomTitle}>so với kỳ trước</Text>
         </View>
       </View>
     </View>
@@ -63,7 +115,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
     borderRadius: 16,
-    marginVertical:10,
+    marginVertical: 10,
+    borderWidth:1,
+    borderColor:'#e4e4e4ff',
   },
   headerRow: {
     flexDirection: "row",
@@ -100,7 +154,6 @@ const styles = StyleSheet.create({
 
   boxYellow: {
     backgroundColor: "#fff3c6ff",
-    marginLeft: 2,
   },
 
   number: {
@@ -111,7 +164,7 @@ const styles = StyleSheet.create({
 
   bottomRow: {
     flexDirection: "row",
-    marginTop: 2,
+    gap:8
   },
 
   bottomBox: {
@@ -119,12 +172,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F8F8",
     borderRadius: 12,
     padding: 12,
-    marginRight: 8,
   },
 
   bottomTitle: {
     fontSize: 13,
-    marginBottom: 2,
+    marginTop: 4,
   },
 
   bottomValue: {

@@ -144,6 +144,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginVertical: 10,
+    borderWidth:1,
+    borderColor:'#e4e4e4ff',
   },
   headerRow: {
     flexDirection: "row",

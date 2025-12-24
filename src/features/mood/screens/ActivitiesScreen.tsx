@@ -10,42 +10,78 @@ import {
   Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation, useRoute,RouteProp, } from "@react-navigation/native";
-import { ACTIVITIES, ActivityItem } from "../utils/activities";
+import { useRoute, RouteProp } from "@react-navigation/native";
 import AddActivityModal from "../components/AddActivityModal";
-import { addActivityToFirebase } from "../services/activityService";
 
 import { DETAIL_MOODS } from "../utils/detailMoods";
-import { getTodayKey } from "../../../utils/date";
 import { RootStackParamList } from "../../../app/navigation/types";
 import { auth, firestore } from "../../../services/firebase/firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
+
 import dayjs from "dayjs";
 import { saveOrUpdateMoodLog } from "../services/saveOrUpdateMoodLog";
+import { addActivityToFirebase } from "../services/activityService";
+import { ActivityItem } from "../utils/activities";
 
 type RouteProps = RouteProp<RootStackParamList, "Activities">;
 
-export const ActivitiesScreen = ({ navigation }: any) => {
+const ActivitiesScreen = ({ navigation }: any) => {
+  const route = useRoute<RouteProps>();
+  const { moodId, mode, date } = route.params || {};
 
-const route = useRoute<RouteProps>();
-  const { moodId, mode } = route.params || {};
-
-  const [activities, setActivities] = useState<ActivityItem[]>(ACTIVITIES);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [detailMoods, setDetailMoods] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
 
-  /* Load existing mood log (edit case) */
-  useEffect(() => {
-    if (mode !== "edit") return;
+  const targetDate = date;
+  const isEditToday = mode === "edit";
 
-    const loadTodayLog = async () => {
+  /* ================= LOAD USER ACTIVITIES ================= */
+  useEffect(() => {
+    const loadActivities = async () => {
       const user = auth.currentUser;
       if (!user) return;
 
-      const todayKey = dayjs().format("YYYY-MM-DD");
-      const ref = doc(firestore, "users", user.uid, "moodLogs", todayKey);
+      const ref = collection(firestore, "users", user.uid, "activities");
+      const q = query(ref, orderBy("createdAt", "asc"));
+      const snap = await getDocs(q);
+
+      const list: ActivityItem[] = snap.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          label: data.label,
+          icon: data.icon,
+          color: data.color,
+          isDefault: data.isDefault ?? false,
+        };
+      });
+
+      setActivities(list);
+    };
+
+    loadActivities();
+  }, []);
+
+  /* ================= LOAD TODAY LOG (EDIT MODE) ================= */
+  useEffect(() => {
+    if (!isEditToday || !targetDate) return;
+
+    const loadLog = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const ref = doc(firestore, "users", user.uid, "moodLogs", targetDate);
       const snap = await getDoc(ref);
 
       if (snap.exists()) {
@@ -56,10 +92,10 @@ const route = useRoute<RouteProps>();
       }
     };
 
-    loadTodayLog();
-  }, [mode]);
+    loadLog();
+  }, [isEditToday, targetDate]);
 
-
+  /* ================= HANDLERS ================= */
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
@@ -79,10 +115,11 @@ const route = useRoute<RouteProps>();
     if (!user) return;
 
     await addActivityToFirebase(user.uid, newItem);
+
     setActivities((prev) => [...prev, newItem]);
   };
 
-   const handleSave = async () => {
+  const handleSave = async () => {
     const user = auth.currentUser;
     if (!user || !moodId) return;
 
@@ -92,18 +129,20 @@ const route = useRoute<RouteProps>();
       detailMoods,
       activities: selected,
       note: notes,
+      date: targetDate ?? dayjs().format("YYYY-MM-DD"),
     });
 
     Alert.alert(
       "Thành công",
-      mode === "edit"
+      isEditToday
         ? "Mood hôm nay đã được cập nhật"
         : "Mood hôm nay đã được lưu"
     );
 
     navigation.navigate("MoodTrackingSaved");
   };
- 
+
+  /* ================= RENDER ================= */
   const renderActivityTag = (item: ActivityItem) => {
     const isSelected = selected.includes(item.id);
 
@@ -136,63 +175,64 @@ const route = useRoute<RouteProps>();
 
   return (
     <View style={styles.container}>
-      <View style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-          {/* DETAIL MOOD */}
-          <View style={styles.detailMoodSection}>
-            <Text style={styles.detailQuestion}>
-              Cảm xúc cụ thể?
-              <Text style={styles.detailHint}> (Chọn tối đa 3)</Text>
-            </Text>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* DETAIL MOOD */}
+        <View style={styles.detailMoodSection}>
+          <Text style={styles.detailQuestion}>
+            Cảm xúc cụ thể?
+            <Text style={styles.detailHint}> (Chọn tối đa 3)</Text>
+          </Text>
 
-            <View style={styles.detailTags}>
-              {(DETAIL_MOODS[moodId ?? ""] || []).map((item) => {
-                const active = detailMoods.includes(item);
-                return (
-                  <TouchableOpacity
-                    key={item}
+          <View style={styles.detailTags}>
+            {(DETAIL_MOODS[moodId ?? ""] || []).map((item) => {
+              const active = detailMoods.includes(item);
+              return (
+                <TouchableOpacity
+                  key={item}
+                  style={[
+                    styles.detailTag,
+                    active && styles.detailTagActive,
+                  ]}
+                  onPress={() => toggleDetailMood(item)}
+                >
+                  <Text
                     style={[
-                      styles.detailTag,
-                      active && styles.detailTagActive,
+                      styles.detailTagText,
+                      active && styles.detailTagTextActive,
                     ]}
-                    onPress={() => toggleDetailMood(item)}
                   >
-                    <Text
-                      style={[
-                        styles.detailTagText,
-                        active && styles.detailTagTextActive,
-                      ]}
-                    >
-                      {item}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
+        </View>
 
-          <Text style={styles.title}>Hôm nay bạn đã làm gì?</Text>
+        <Text style={styles.title}>Hôm nay bạn đã làm gì?</Text>
 
-          <View style={styles.grid}>
-            {activities.map(renderActivityTag)}
+        <View style={styles.grid}>
+          {activities.map(renderActivityTag)}
 
-            <TouchableOpacity
-              style={styles.newTag}
-              onPress={() => setShowModal(true)}
-            >
-              <Text style={{ fontSize: 14 }}>＋ Thêm</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.newTag}
+            onPress={() => setShowModal(true)}
+          >
+            <Text>＋ Thêm</Text>
+          </TouchableOpacity>
+        </View>
 
-          <TextInput
-            placeholder="Bạn đang cảm thấy thế nào..."
-            value={notes}
-            onChangeText={setNotes}
-            style={styles.input}
-            multiline
-          />
-        </ScrollView>
-      </View>
+        <TextInput
+          placeholder="Bạn đang cảm thấy thế nào..."
+          value={notes}
+          onChangeText={setNotes}
+          style={styles.input}
+          multiline
+        />
+      </ScrollView>
 
       <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
         <Text style={styles.saveText}>Lưu</Text>
@@ -208,6 +248,7 @@ const route = useRoute<RouteProps>();
 };
 
 export default ActivitiesScreen;
+
 
 /* ================= STYLES ================= */
 

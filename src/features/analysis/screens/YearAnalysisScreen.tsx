@@ -1,34 +1,80 @@
 import MoodSummaryCard from "../components/MoodSummaryCard";
 import TrendCard from "../components/TrendCard";
-import { analysisData } from "../utils/analysisData";
 import { ScrollView, View } from "react-native";
 import PeriodSelector from "../components/PeriodSelector";
-import { useState } from "react";
-import { moodData } from "../utils/moodData";
+import { useState, useEffect } from "react";
 import MoodActivityCard from "../components/MoodActivityCard";
 import MoodWeekdayBarChart from "../components/MoodWeekdayBarChart";
 import MoodYearMiniMonths, { MoodByDay } from "../components/MoodYearMiniMonths";
+import { auth } from "../../../services/firebase/firebaseConfig";
+
+import { getMoodSummary } from "../services/moodSummaryService";
+import { getTrendByRange, getTrendWithCompare } from "../services/trendService";
+import { getMoodActivityByRange } from "../services/moodActivityService";
+import { getMoodByRange } from "../services/moodWeekdayService";
+import { getMoodByYear } from "../services/moodYearService";
+import { getStreakYear } from "../services/streakYearService";
+
+import {
+  MoodSummaryData,
+  MoodItemInMonth,
+  TrendData,
+} from "../types/analysis.types";
+
+interface MoodActivityItem {
+  moodId: string;
+  label: string;
+  activities: { id: string; count: number; percent: number }[];
+}
 
 export default function YearAnalysisScreen() {
-  const [year, setYear] = useState(2025); // year thực tế
-  const [monthIndex, setMonthIndex] = useState(11);
-  const data = analysisData;
+  const [year, setYear] = useState(2025);
 
-  const moodActivityData = data.lastMoods.map((item) => {
-    const mood = moodData.find((m) => m.id === item.moodId);
-    return {
-      moodId: item.moodId,
-      label: mood?.label ?? item.moodId,
-      activities: item.activities,
-    };
-  });
+  const start = new Date(year, 0, 1);
+  const end = new Date(year, 11, 31, 23, 59, 59);
 
-  const moodByYear: MoodByDay[][] = Array.from({ length: 12 }, (_, i) => {
-    if (i === 11) {
-      return (analysisData as any).moodByMonth as MoodByDay[];
-    }
-    return [];
-  });
+  const prevStart = new Date(year - 1, 0, 1);
+  const prevEnd = new Date(year - 1, 11, 31);
+
+  const [trend, setTrend] = useState<TrendData | null>(null);
+  const [moodSummary, setMoodSummary] = useState<MoodSummaryData | null>(null);
+
+  // ✅ MINI YEAR
+  const [moodByYearMini, setMoodByYearMini] = useState<MoodByDay[][]>([]);
+  const [streakYear, setStreakYear] = useState<any>(null);
+
+  // ✅ WEEKDAY BAR CHART
+  const [moodByYearWeekday, setMoodByYearWeekday] =
+    useState<MoodItemInMonth[]>([]);
+
+  const [moodActivities, setMoodActivities] =
+    useState<MoodActivityItem[]>([]);
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    getMoodByYear(user.uid, year).then(setMoodByYearMini);
+    getStreakYear(user.uid, year).then(setStreakYear);
+
+    getMoodSummary(user.uid, start, end).then(setMoodSummary);
+
+    getTrendByRange(user.uid, start, end).then(setTrend);
+    getTrendWithCompare(
+      user.uid,
+      start,
+      end,
+      prevStart,
+      prevEnd
+    ).then(setTrend);
+
+    getMoodActivityByRange(user.uid, start, end)
+      .then(setMoodActivities);
+
+    getMoodByRange(user.uid, "year", 0, year)
+      .then(setMoodByYearWeekday);
+
+  }, [year]);
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
@@ -39,23 +85,30 @@ export default function YearAnalysisScreen() {
       />
 
       <View style={{ height: 16 }} />
+
+      {/* ✅ MINI YEAR CHART */}
       <MoodYearMiniMonths
         year={year}
-        moodByYear={moodByYear}
-        streak={data.streakYear} 
-        onPressMonth={(m) => console.log("open month", m)}
-      />
-      <MoodSummaryCard data={data} />
-      <TrendCard trend={data.trend} />
-      <MoodWeekdayBarChart
-        month={monthIndex}
-        year={year}
-        moodByMonth={analysisData.moodByMonth}
-        onPressBar={(weekdayIndex, avg) => {
-          console.log("Pressed weekday", weekdayIndex, avg);
+        moodByYear={moodByYearMini}
+        streak={streakYear}
+        onPressMonth={(m) => {
+          console.log("Open month", m + 1);
         }}
       />
-      <MoodActivityCard data={moodActivityData} />
+
+      {moodSummary && <MoodSummaryCard data={moodSummary} />}
+      {trend && <TrendCard trend={trend} />}
+
+      {/* ✅ WEEKDAY BAR */}
+      <MoodWeekdayBarChart
+        month={0}
+        year={year}
+        moodByMonth={moodByYearWeekday}
+      />
+
+      {moodActivities.length > 0 && (
+        <MoodActivityCard data={moodActivities} />
+      )}
     </ScrollView>
   );
 }
