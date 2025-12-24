@@ -9,9 +9,9 @@ import {
 } from "react-native";
 import { useNavigation, useRoute, RouteProp, } from "@react-navigation/native";
 import { moodData, MoodItem } from "../utils/moodData";
-import { getMoodLogByDate } from "../services/moodLogService";
+// import { getMoodLogByDate } from "../services/moodLogService";
 import { getTodayKey } from "../../../utils/date";
-import { MoodLog } from "../services/moodLogService";
+// import { MoodLog } from "../services/moodLogService";
 import { RootStackParamList } from "../../../app/navigation/types";
 import { auth, firestore } from "../../../services/firebase/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";

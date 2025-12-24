@@ -2,9 +2,7 @@ export * from "./screens/JournalHomeScreen";
 export * from "./screens/JournalDetailScreen";
 export * from "./screens/JournalCreateScreen";
 export * from "./screens/JournalEditScreen";
-
 export * from "./components/BottomToolbar";
-
 export * from "./utils/formatDate";
 
 export {default as JournalHomeScreen } from './screens/JournalHomeScreen';
