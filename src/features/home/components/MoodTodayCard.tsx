@@ -24,7 +24,7 @@ const MOOD_HINT: Record<string, string> = {
     anxious: "Bạn đã cố gắng rồi 💪",
 };
 
-const MoodTodayCard: React.FC<Props> = ({
+export const MoodTodayCard: React.FC<Props> = ({
     todayMood,
     onPressEmpty,
     onEdit,

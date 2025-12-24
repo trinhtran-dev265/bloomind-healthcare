@@ -15,6 +15,11 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 import JournalToolbar from "../components/JournalToolbar";
 import { useBlurOnLeave } from "../hooks/useBlurOnLeave";
+import { saveJournal } from "../services/journal.service";
+import { JournalBlock } from "../types/journal";
+import { nanoid } from "nanoid/non-secure";
+import { uploadJournalImage } from "../services/image.service";
+
 
 const JournalCreateScreen = () => {
   useBlurOnLeave();
@@ -24,11 +29,73 @@ const JournalCreateScreen = () => {
   const [content, setContent] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [blocks, setBlocks] = useState<JournalBlock[]>([]);
 
-  const handleSave = () => {
-    // TODO: save journal to firestore
-    navigation.goBack();
+  const handleInsertImage = async (uri: string) => {
+    try {
+      alert("Đang upload ảnh...");
+      const url = await uploadJournalImage(uri);
+
+      setBlocks(prev => [
+        ...prev,
+        {
+          id: nanoid(),
+          type: "image",
+          url,
+        },
+      ]);
+
+      alert("Đã thêm ảnh ✅");
+    } catch (e) {
+      console.error(e);
+      alert("Upload ảnh thất bại ❌");
+    }
   };
+
+  const handleSave = async () => {
+    //Validate
+    if (!title.trim() && !content.trim() && blocks.length === 0) {
+      alert("Journal không thể trống");
+      return;
+    }
+
+    const finalBlocks: JournalBlock[] = [];
+
+    if (title.trim()) {
+      finalBlocks.push({
+        id: "title",
+        type: "text",
+        text: title.trim(),
+        style: { variant: "title" },
+      });
+    }
+
+    if (content.trim()) {
+      finalBlocks.push({
+        id: "content",
+        type: "text",
+        text: content.trim(),
+        style: { variant: "body" },
+      });
+    }
+    finalBlocks.push(...blocks);
+    //Debug
+    console.log("📓 Saving journal blocks:", finalBlocks);
+
+    try {
+      await saveJournal({
+        date: selectedDate,
+        blocks: finalBlocks, 
+      });
+
+      alert("Đã lưu journal thành công");
+      navigation.goBack();
+    } catch (error) {
+      console.error("Save journal failed:", error);
+      alert("Không thể lưu journal");
+    }
+  };
+
 
   /* ================= HEADER ================= */
   useLayoutEffect(() => {
@@ -108,7 +175,13 @@ const JournalCreateScreen = () => {
         </View>
 
         {/* TOOLBAR */}
-        <JournalToolbar />
+        <JournalToolbar 
+          onInsertImage={handleInsertImage}
+          onInsertAudio={() => {}}
+          onFormat={() => {}}
+          onBullet={() => {}}
+          onAddIcon={() => {}}
+        />
 
         {/* DATE PICKER */}
         <DateTimePickerModal

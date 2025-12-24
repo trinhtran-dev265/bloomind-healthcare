@@ -8,7 +8,7 @@ import {
   Modal,
   Text,
 } from "react-native";
-import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { Audio } from "expo-av";
 
@@ -23,7 +23,17 @@ const JournalToolbar = ({
   const [showEditor, setShowEditor] = useState(false);
 
   // -------------------------------
-  // IMAGE PICKER
+  const pickImage = async () => {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    quality: 0.8,
+  });
+
+  if (!result.canceled) {
+    // onAddImage(result.assets[0].uri);
+  }
+};
+
   // -------------------------------
   const handleImage = async () => {
     Alert.alert("Thêm ảnh", "Bạn muốn chọn hay chụp ảnh?", [

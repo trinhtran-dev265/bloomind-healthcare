@@ -138,12 +138,12 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 18, fontWeight: "600", color: "#373737" },
 
   banner: {
-    width:  '100%',
-    height: 180,
+    width: Platform.OS === "web" ? "70%" : "100%",
+    height: Platform.OS === "web" ? 280 : 180,
     resizeMode: "cover",
     alignSelf: "center",
-    marginBottom:20,
-    // borderRadius: 16,
+    marginBottom: 20,
+    borderRadius: Platform.OS === "web" ? 16 : 0,
   },
 
   yearRow: {

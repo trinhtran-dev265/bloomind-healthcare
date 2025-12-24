@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet, StatusBar, Animated } from 'react-native';
-
+import { View, Image, Text, StatusBar, Animated } from 'react-native';
 import { COLORS } from '../../../types/contants/colors';
 import useSplashAnimation from '../hooks/useSplashAnimation';
-import { styles } from '../../../types/spalsh';
 import ProgressBar from '../components/ProgressBar';
+import { styles } from '../styles/splash';
 
-const SplashScreen: React.FC = () => {
+export const SplashScreen: React.FC = () => {
   const { opacity, progressBarWidth, progressBarOpacity } = useSplashAnimation();
 
   return (
