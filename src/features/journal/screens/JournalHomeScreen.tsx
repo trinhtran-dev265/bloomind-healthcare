@@ -13,7 +13,6 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { formatTime, getTitleAndPreview, MONTHS } from "../services/journal.helpers";
 import { getJournalsByYear } from "../services/journal.service";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const JournalHomeScreen = () => {
   const navigation: any = useNavigation();
@@ -22,6 +21,7 @@ const JournalHomeScreen = () => {
   const [journals, setJournals] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [userReady, setUserReady] = useState(false);
+
 
   useEffect(() => {
     const auth = getAuth();
@@ -61,7 +61,6 @@ const JournalHomeScreen = () => {
 
 
   return (
-    <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
       {/* Header */}
 
@@ -111,7 +110,6 @@ const JournalHomeScreen = () => {
         <Ionicons name="add" size={32} color="white" />
       </TouchableOpacity>
     </View>
-    </SafeAreaView>
   );
 };
 
