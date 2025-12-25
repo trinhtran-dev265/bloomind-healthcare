@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,41 +9,95 @@ import {
   Platform,
   Keyboard,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 import JournalToolbar from "../components/JournalToolbar";
 import { useBlurOnLeave } from "../hooks/useBlurOnLeave";
+import {
+  getJournalById,
+  saveJournal,
+} from "../services/journal.service";
+import { JournalBlock, TextBlock } from "../types/journal";
 
 export const JournalEditScreen = () => {
   useBlurOnLeave();
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
+  const route: any = useRoute();
+  const { journalId } = route.params;
 
-  // ----- Load nội dung từ DetailScreen -----
-  const [date] = useState("15 Nov 2025");
-  const [title, setTitle] = useState("The first day of the trip");
-  const [content, setContent] = useState(
-    "Today we visited many unique places and many interesting things...\n\n[IMAGE]: image.png\n[AUDIO]: audio-record-01.m4a"
-  );
+  const [loading, setLoading] = useState(true);
+  const [date, setDate] = useState<Date>(new Date());
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
-  const handleSave = () => {
-  // Blur trên web
-  if (Platform.OS === 'web') {
-    (document.activeElement as HTMLElement)?.blur();
-  } else {
-    // Chỉ gọi trên mobile
-    const focusedInput = TextInput.State.currentlyFocusedInput();
-    if (focusedInput) {
-      TextInput.State.blurTextInput(focusedInput);
+  /* ================= LOAD JOURNAL ================= */
+  useEffect(() => {
+    loadJournal();
+  }, []);
+
+  const loadJournal = async () => {
+    try {
+      const journal = await getJournalById(journalId);
+      if (!journal) return;
+
+      setDate(journal.date.toDate ? journal.date.toDate() : journal.date);
+
+      const textBlocks = journal.blocks.filter(
+        (b: any) => b.type === "text"
+      );
+
+      // title = block đầu tiên
+      setTitle(textBlocks[0]?.text || "");
+
+      // content = các block còn lại
+      setContent(
+        textBlocks
+          .slice(1)
+          .map((b: any) => b.text)
+          .join("\n\n")
+      );
+    } catch (e) {
+      console.log("Load journal error", e);
+    } finally {
+      setLoading(false);
     }
-  }
-  
-  Keyboard.dismiss();
-  navigation.goBack();
-};
+  };
+
+  /* ================= SAVE ================= */
+  const handleSave = async () => {
+    if (Platform.OS === "web") {
+      (document.activeElement as HTMLElement)?.blur();
+    }
+    Keyboard.dismiss();
+
+    const blocks: JournalBlock[] = [
+      {
+        id: "title",
+        type: "text" as const,
+        text: title,
+      } as TextBlock,
+      {
+        id: "content",
+        type: "text" as const,
+        text: content,
+      } as TextBlock,
+    ];
+
+    await saveJournal({
+      journalId,
+      date,
+      blocks,
+    });
+
+    navigation.goBack();
+  };
+
+  if (loading) return null;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -56,13 +110,16 @@ export const JournalEditScreen = () => {
       </View>
 
       {/* Body */}
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        <Text style={styles.date}>{date}</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Text style={styles.date}>
+          {date.toDateString()}
+        </Text>
 
         <TextInput
           style={styles.titleInput}
           value={title}
           onChangeText={setTitle}
+          placeholder="Tiêu đề"
         />
 
         <TextInput
@@ -70,23 +127,29 @@ export const JournalEditScreen = () => {
           multiline
           value={content}
           onChangeText={setContent}
+          placeholder="Viết gì đó cho hôm nay…"
         />
       </ScrollView>
 
       {/* Toolbar */}
-      <JournalToolbar/>
+      <JournalToolbar />
     </View>
+    </SafeAreaView>
   );
 };
 
 export default JournalEditScreen;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fffbf2",
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#fffbf2",
     paddingHorizontal: 20,
-    paddingTop: 20,
   },
   header: {
     flexDirection: "row",

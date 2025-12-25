@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,16 +9,60 @@ import {
   Platform
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-const isWeb = Platform.OS === 'web';
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { formatTime, getTitleAndPreview, MONTHS } from "../services/journal.helpers";
+import { getJournalsByYear } from "../services/journal.service";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const JournalHomeScreen = () => {
   const navigation: any = useNavigation();
 
   const [year, setYear] = useState(2025);
+  const [journals, setJournals] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [userReady, setUserReady] = useState(false);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserReady(true);
+      }
+    });
+
+    return unsub;
+  }, []);
+
+  useFocusEffect(
+  useCallback(() => {
+    if (!userReady) return;
+
+    loadJournals();
+  }, [year, userReady])
+);
+
+
+  const loadJournals = async () => {
+    try {
+      setLoading(true);
+      console.log("Loading journals for year:", year);
+
+      const data = await getJournalsByYear(year);
+      console.log("JOURNALS:", data);
+
+      setJournals(data);
+    } catch (e) {
+      console.log("Load journals error", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
       {/* Header */}
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -42,30 +86,19 @@ const JournalHomeScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* LIST ITEMS */}
-        {renderJournalCard(
-          navigation,
-          "15",
-          "November",
-          "The first day of the trip",
-          "Today we visited many unique places and many interesting things..."
-        )}
+        {journals.map((j) => {
+          const { title, preview } = getTitleAndPreview(j.blocks);
 
-        {renderJournalCard(
-          navigation,
-          "11",
-          "November",
-          "Chill day",
-          "Relaxing with friends and discovering new foods..."
-        )}
-
-        {renderJournalCard(
-          navigation,
-          "5",
-          "November",
-          "Today we visited many unique places and many interesting things...",
-          ""
-        )}
+          return renderJournalCard(
+            navigation,
+            j.id,
+            j.date,
+            j.day,
+            MONTHS[j.month - 1],
+            title,
+            preview
+          );
+        })}
 
         <View style={{ height: 120 }} />
       </ScrollView>
@@ -78,6 +111,7 @@ const JournalHomeScreen = () => {
         <Ionicons name="add" size={32} color="white" />
       </TouchableOpacity>
     </View>
+    </SafeAreaView>
   );
 };
 
@@ -89,20 +123,28 @@ export default JournalHomeScreen;
 // -------------------------------
 const renderJournalCard = (
   navigation: any,
-  day: any,
-  month: any,
-  title: any,
-  content: any
+  journalId: string,
+  date: any,
+  day: number,
+  month: string,
+  title: string,
+  content: string
 ) =>
   <TouchableOpacity
+    key={journalId}
     style={styles.card}
-    onPress={() => navigation.navigate("JournalDetail")}
+    onPress={() =>
+      navigation.navigate("JournalDetail", { journalId })
+    }
   >
     <View style={styles.dateRow}>
+      <Text style={styles.monthText}>
+        {formatTime(date)}
+      </Text>
       <Text style={styles.dayText}>{day}</Text>
       <Text style={styles.monthText}>{month}</Text>
 
-      {/* đổi icon leaf → microphone */}
+      {/* voice icon – giữ nguyên mock */}
       <MaterialCommunityIcons
         name="microphone-outline"
         size={18}
@@ -110,9 +152,17 @@ const renderJournalCard = (
       />
     </View>
 
-    <Text style={styles.cardTitle}>{title}</Text>
-    <Text style={styles.cardContent}>{content}</Text>
+    {/* TITLE */}
+    <Text style={styles.cardTitle} numberOfLines={1}>
+      {title}
+    </Text>
 
+    {/* CONTENT */}
+    <Text style={styles.cardContent} numberOfLines={2}>
+      {content}
+    </Text>
+
+    {/* THUMBNAIL – luôn hiển thị */}
     <Image
       source={require("../assets/image.png")}
       style={styles.thumb}
@@ -120,10 +170,16 @@ const renderJournalCard = (
   </TouchableOpacity>;
 
 
+
 // -------------------------------
 // Styles
 // -------------------------------
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fffbf2",
+  },
+
   container: { flex: 1, backgroundColor: "#fffbf2" },
 
   header: {
@@ -175,7 +231,7 @@ const styles = StyleSheet.create({
   dateRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 10,
     marginBottom: 2,
   },
 
@@ -187,7 +243,7 @@ const styles = StyleSheet.create({
 
   monthText: {
     fontSize: 13,
-    marginLeft: 4,
+    marginLeft: 2,
     color: "#6E6E6E",
   },
 
