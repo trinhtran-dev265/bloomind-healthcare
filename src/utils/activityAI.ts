@@ -1,0 +1,15 @@
+export const ACTIVITY_AI_MAP: Record<string, string> = {
+  work: "work-related tasks",
+  study: "studying",
+  social: "using social media",
+  exercise: "exercising",
+  sleep: "sleeping",
+  deadline: "dealing with deadlines",
+  game: "playing games",
+  party: "attending a party",
+  cooking: "cooking",
+  movie: "watching movies",
+  music: "listening to music",
+  meditation: "meditating",
+  travel: "traveling",
+};
