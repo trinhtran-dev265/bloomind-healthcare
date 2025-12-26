@@ -1,3 +1,6 @@
+// app/navigation/types.ts
+import { MoodLog } from "../../features/recommender/types/mood";
+
 export type RootStackParamList = {
   Splash: undefined;
   Home: undefined;
@@ -35,6 +38,14 @@ export type RootStackParamList = {
   JournalCreate: undefined;
   JournalEdit: undefined;
   Journal: undefined;
+
+//   Chatbot: undefined;
+//   ChatHistory: undefined;
+
+  Recommendation: {
+    todayMood?: MoodLog;
+  };
+
   Chatbot: {
     conversationId?: string;
     userContext?: string;
@@ -47,3 +58,9 @@ declare global {
     interface RootParamList extends RootStackParamList {}
   }
 }
+
+export type NoParamRoute = {
+  [K in keyof RootStackParamList]: RootStackParamList[K] extends undefined
+    ? K
+    : never;
+}[keyof RootStackParamList];

@@ -9,6 +9,7 @@ import { COLORS } from '../../types/contants/colors';
 import SplashScreen from '../../features/home/screens/SplashScreen';
 import { MoodTrackingScreen, ActivitiesScreen, MoodTrackingSavedScreen } from '../../features/mood/index';
 import { AnalysisScreen, MoodHistoryScreen } from '../../features/analysis/index';
+import { RecommendationScreen } from "../../features/recommender";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export const AppNavigator: React.FC = () => {
@@ -128,6 +129,14 @@ export const AppNavigator: React.FC = () => {
         component={MoodHistoryScreen}
         options={{
           headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="Recommendation"
+        component={RecommendationScreen}
+        options={{
+          headerShown: true,
         }}
       />
 
