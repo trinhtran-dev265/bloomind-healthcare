@@ -55,79 +55,77 @@ const ChatScreen = () => {
 
     const [messages, setMessages] = useState<Msg[]>([]);
     const [typing, setTyping] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     if (!uid || !conversationId) return;
+    if (isInitialized) return;
 
     const loadHistory = async () => {
-      try {
-        const history = await getAllMessages(uid, conversationId);
-        setMessages(prev => {
-          if (prev.length > 0) return prev; 
-          return history;
-        });
-      } catch (err) {
-        console.warn("Failed to load chat history", err);
-      }
+    const history = await getAllMessages(uid, conversationId);
+      setMessages(history);
+      setIsInitialized(true);
     };
 
     loadHistory();
-  }, [uid, conversationId]);
+  }, [uid, conversationId, isInitialized]);
 
   const DEFAULT_WELCOME =
   "Chào bạn, mình luôn sẵn sàng ở đây để lắng nghe bạn. Nói đi, đừng ngại nhé.";
 
 useEffect(() => {
   if (!uid) return;
-  if (messages.length > 0) return; // tránh gọi lại
+  if (conversationId) return;
+  if (isInitialized) return;
 
-  if (!userContext) {
-    setMessages([
-      {
-        id: "welcome",
-        text: DEFAULT_WELCOME,
-        sender: "bot",
-      },
-    ]);
-    return;
-  }
+  const initConversation = async () => {
+    setTyping(true);
 
-  const sendWelcome = async () => {
-    try {
-      setTyping(true);
-
-      const res = await sendMessageToAI(
-      "Please gently check in with the user based on their emotional context.",
-      [],
-      userContext,
-      true
-          );
-
+    // ❌ Chưa tracking mood
+    if (!userContext) {
       setMessages([
-        {
-          id: "welcome",
-          text: res.reply,
-          sender: "bot",
-        },
+        { id: "welcome", text: DEFAULT_WELCOME, sender: "bot" },
       ]);
-    } catch (err) {
+      setIsInitialized(true);
+      setTyping(false);
+      return;
+    }
+
+    try {
+      // ✅ Create conversation
+      const convoId = await createConversation(
+        uid,
+        "Bloomie checked in after mood tracking"
+      );
+      setConversationId(convoId);
+
+      // ✅ Ask AI
+      const res = await sendMessageToAI(
+        "Please gently check in with the user based on their emotional context.",
+        [],
+        userContext,
+        true
+      );
+
+      // ✅ Save welcome
+      await saveMessage(uid, convoId, "assistant", res.reply, "ai");
+
       setMessages([
-        {
-          id: "welcome",
-          text: DEFAULT_WELCOME,
-          sender: "bot",
-        },
+        { id: "welcome", text: res.reply, sender: "bot" },
+      ]);
+    } catch {
+      setMessages([
+        { id: "welcome", text: DEFAULT_WELCOME, sender: "bot" },
       ]);
     } finally {
       setTyping(false);
+      setIsInitialized(true);
     }
   };
 
-  sendWelcome();
-}, [uid, userContext]);
+  initConversation();
+}, [uid, userContext, conversationId, isInitialized]);
 
-
-  // Auto scroll
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true });
   }, [messages, typing]);
@@ -147,23 +145,18 @@ useEffect(() => {
     try {
       let convoId = conversationId;
 
-      // 1️⃣ Create conversation if needed
       if (!convoId) {
         convoId = await createConversation(uid, text);
         setConversationId(convoId);
       }
 
-      // 2️⃣ Save user message
       await saveMessage(uid, convoId, "user", text, "system");
 
-      // 3️⃣ Get recent history
       const history = await getRecentMessages(uid, convoId);
 
-      // 4️⃣ Call AI
       const res = await sendMessageToAI(text, history, userContext,
   false);
 
-      // 5️⃣ Save AI reply
       await saveMessage(
         uid,
         convoId,
@@ -181,7 +174,6 @@ useEffect(() => {
         },
       ]);
     } catch (err) {
-      // ❗ System-safe fallback (not fake empathy)
       setMessages((prev) => [
         ...prev,
         {

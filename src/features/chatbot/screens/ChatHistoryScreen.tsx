@@ -71,7 +71,7 @@ const ChatHistoryScreen = () => {
             />
             <View style={{ flex: 1 }}>
               <Text style={styles.title}>
-                A conversation about feelings
+                Bloomie
               </Text>
               <Text numberOfLines={1} style={styles.lastMsg}>
                 {item.lastMessage}
