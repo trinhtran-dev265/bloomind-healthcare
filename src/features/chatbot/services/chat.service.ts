@@ -1,5 +1,3 @@
-// src/services/chat.service.ts
-
 import {
   collection,
   addDoc,
@@ -133,8 +131,10 @@ export async function getAllMessages(
 
 // Call AI API
 export async function sendMessageToAI(
-  message: string,
-  history: ChatMessage[]
+  message: string | undefined,
+  history: ChatMessage[],
+  userContext?: string,
+  isWelcome?: boolean
 ): Promise<{ reply: string; degraded?: boolean }> {
   const res = await fetch("https://bloomind-heathcare.vercel.app/api/chat", {
     method: "POST",
@@ -142,6 +142,8 @@ export async function sendMessageToAI(
     body: JSON.stringify({
       message,
       history,
+      userContext,
+      isWelcome,
     }),
   });
 

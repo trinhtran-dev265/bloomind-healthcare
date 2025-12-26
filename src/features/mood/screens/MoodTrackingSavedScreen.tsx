@@ -3,11 +3,26 @@ import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import RoundedButton from "../components/RoundedButton";
 import { Images } from "../utils/images";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { buildUserContext } from "../../../utils/buildUserContext";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../../app/navigation/types";
+
+type NavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "MoodTrackingSaved"
+>;
+
 
 const MoodTrackingSavedScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<any>();
 
+  const moodLog = route.params?.moodLog;
+  const userContext = moodLog
+    ? buildUserContext(moodLog)
+    : undefined;
+    
   return (
     <View style={styles.container}>
 
@@ -28,8 +43,12 @@ const MoodTrackingSavedScreen = () => {
       {/* Chat Button */}
       <RoundedButton
         title="Trò chuyện với Bloomie"
-        color={'#DCFFCB'}
-        onPress={() => navigation.navigate("Chatbot" as never)}
+        color="#DCFFCB"
+        onPress={() =>
+          navigation.navigate("Chatbot", {
+            userContext,
+          })
+        }
       />
 
       {/* Home Button */}

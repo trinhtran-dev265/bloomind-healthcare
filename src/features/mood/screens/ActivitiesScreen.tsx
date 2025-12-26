@@ -30,6 +30,7 @@ import dayjs from "dayjs";
 import { saveOrUpdateMoodLog } from "../services/saveOrUpdateMoodLog";
 import { addActivityToFirebase } from "../services/activityService";
 import { ActivityItem } from "../utils/activities";
+import { buildUserContext } from "../../../utils/buildUserContext";
 
 type RouteProps = RouteProp<RootStackParamList, "Activities">;
 
@@ -120,27 +121,52 @@ const ActivitiesScreen = ({ navigation }: any) => {
   };
 
   const handleSave = async () => {
-    const user = auth.currentUser;
-    if (!user || !moodId) return;
+  const user = auth.currentUser;
+  if (!user || !moodId) return;
 
-    await saveOrUpdateMoodLog(user.uid, {
-      moodId,
-      moodLabel: moodId,
-      detailMoods,
-      activities: selected,
-      note: notes,
-      date: targetDate ?? dayjs().format("YYYY-MM-DD"),
-    });
+  const finalDate = targetDate ?? dayjs().format("YYYY-MM-DD");
 
-    Alert.alert(
-      "Thành công",
-      isEditToday
-        ? "Mood hôm nay đã được cập nhật"
-        : "Mood hôm nay đã được lưu"
-    );
-
-    navigation.navigate("MoodTrackingSaved");
+  const moodLog = {
+    moodId,
+    activities: selected,
+    detailMoods,
+    note: notes,
+    date: finalDate,
   };
+
+  await saveOrUpdateMoodLog(user.uid, {
+    ...moodLog,
+    moodLabel: moodId,
+  });
+
+  const userContext = buildUserContext(moodLog);
+  console.log("🔥 PREWARM REQUEST RECEIVED");
+
+  // 3️WARM UP AI (no await)
+  fetch("https://bloomind-heathcare.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: "Warm up request. No reply needed.",
+      history: [],
+      userContext,
+      isWelcome: true,
+      prewarm: true,
+    }),
+  }).catch(() => {});
+
+  Alert.alert(
+    "Thành công",
+    isEditToday
+      ? "Mood hôm nay đã được cập nhật"
+      : "Mood hôm nay đã được lưu"
+  );
+
+  navigation.navigate("MoodTrackingSaved", {
+    moodLog,
+  });
+};
+
 
   /* ================= RENDER ================= */
   const renderActivityTag = (item: ActivityItem) => {
