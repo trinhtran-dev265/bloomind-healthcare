@@ -12,7 +12,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import { RootStackParamList , NoParamRoute} from "../../../app/navigation/types";
+import { RootStackParamList, NoParamRoute } from "../../../app/navigation/types";
 import MoodTodayCard from "../components/MoodTodayCard";
 import { HomeHeader } from "../components/HomeHeader";
 import { HomeActions } from "../components/HomeActions";
@@ -21,22 +21,22 @@ import { useTodayMood } from "../hooks/useTodayMood";
 import { homeStyles as styles } from "../styles/home";
 import { HOME_ASSETS } from "../../../types/contants/homeAssets";
 import RecommendationCard from "../../recommender/components/RecommendationCard";
-import { generateRecommendations } from "../../recommender/services/recommender";
 import { RecommendationAction } from "../../recommender/types/recommendation";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
 
+  /* ---------------- hooks ---------------- */
   const userInfo = useHomeUser();
   const todayMood = useTodayMood();
 
   const [recommendations, setRecommendations] =
     useState<RecommendationAction[]>([]);
 
-  /* mascot animation */
+  /* ---------------- mascot animation ---------------- */
   const floatAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -59,33 +59,80 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     return () => loop.stop();
   }, [floatAnim]);
 
-const onRecommend = () => {
-  if (!todayMood) return;
+  /* ================= BIG MASCOT (TAKEN FROM OLD FILE) ================= */
 
-  navigation.navigate("Recommendation", {
-    todayMood: {
-      date: new Date().toISOString().slice(0, 10),
-      moodId: todayMood.id,          // 🔥 QUAN TRỌNG
-      moodLabel: todayMood.label,
-      detailMoods: todayMood.detailMoods || [],
-      note: "",
-      activities: [],
-    },
-  });
-};
+  const HEADER_EST = 80;
+  const ACTIONS_EST = 110;
+  const BOTTOM_NAV_EST = isWeb ? 110 : 90;
+  const EXTRA_SPACING = 20;
+  const MOOD_CARD_EST = 150;
 
+  const availableHeightForMascot = Math.max(
+    0,
+    height -
+      (HEADER_EST +
+        MOOD_CARD_EST +
+        ACTIONS_EST +
+        BOTTOM_NAV_EST +
+        EXTRA_SPACING)
+  );
 
+  const webMax = 700;
+  const byWidth = Math.round(width * 0.85);
+  const byAvailable = Math.round(
+    Math.max(availableHeightForMascot * 0.98, 320)
+  );
+
+  const mascotMaxHeight = Math.min(
+    byWidth,
+    byAvailable,
+    isWeb ? webMax : Infinity
+  );
+
+  const mascotWidth = Math.round(mascotMaxHeight * 0.98);
+
+  const mascotLift = isWeb
+    ? Math.round(mascotMaxHeight * 0.08)
+    : Math.round(mascotMaxHeight * 0.12);
+
+  const offsetMultiplierWeb = 0.06;
+  const offsetMultiplierMobile = 0.02;
+
+  const rawOffset = Math.round(
+    width * (isWeb ? offsetMultiplierWeb : offsetMultiplierMobile)
+  );
+  const maxOffset = Math.round(width * 0.18);
+  const mascotOffsetX = Math.min(rawOffset, maxOffset);
+
+  /* ================= END BIG MASCOT ================= */
+
+  const onRecommend = () => {
+    if (!todayMood) return;
+
+    navigation.navigate("Recommendation", {
+      todayMood: {
+        date: new Date().toISOString().slice(0, 10),
+        moodId: todayMood.id,
+        moodLabel: todayMood.label,
+        detailMoods: todayMood.detailMoods || [],
+        note: "",
+        activities: [],
+      },
+    });
+  };
 
   const handleNavigate = (route: NoParamRoute) => {
-  navigation.navigate(route);
-};
+    navigation.navigate(route);
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
+          {/* Header */}
           <HomeHeader userInfo={userInfo} />
 
+          {/* Mood card */}
           <MoodTodayCard
             todayMood={todayMood}
             onPressEmpty={() =>
@@ -97,24 +144,35 @@ const onRecommend = () => {
             onRecommend={onRecommend}
           />
 
+          {/* Actions */}
           <HomeActions onNavigate={handleNavigate} />
 
+          {/* ================= BIG MASCOT RENDER ================= */}
           <View style={styles.mascotContainer}>
             <Animated.View
               pointerEvents="none"
-              style={{ transform: [{ translateY: floatAnim }] }}
+              style={{
+                transform: [
+                  { translateX: mascotOffsetX },
+                  { translateY: floatAnim },
+                  { translateY: -mascotLift },
+                ],
+                alignItems: "center",
+              }}
             >
               <Animated.Image
                 source={HOME_ASSETS.mascot}
                 style={{
-                  width: width * 0.8,
-                  height: width * 0.8,
+                  width: mascotWidth,
+                  height: mascotMaxHeight,
                   resizeMode: "contain",
                 }}
               />
             </Animated.View>
           </View>
+          {/* ====================================================== */}
 
+          {/* Optional recommendations (giữ comment như file mới) */}
           {/* {recommendations.length > 0 && (
             <View style={{ padding: 16 }}>
               {recommendations.map((item) => (
@@ -125,7 +183,7 @@ const onRecommend = () => {
         </View>
       </ScrollView>
 
-      {/* Bottom nav */}
+      {/* ---------------- Bottom nav ---------------- */}
       <View style={styles.bottomNavWrap}>
         <View style={styles.bottomNav}>
           <TouchableOpacity onPress={() => navigation.navigate("Home")}>
@@ -145,6 +203,7 @@ const onRecommend = () => {
           </TouchableOpacity>
         </View>
 
+        {/* FAB */}
         <TouchableOpacity
           style={styles.fab}
           onPress={() => navigation.navigate("Chatbot")}
