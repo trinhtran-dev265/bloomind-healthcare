@@ -1,5 +1,16 @@
 // services/journal.service.ts
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  serverTimestamp,
+  query,
+  collection,
+  where,
+  orderBy,
+  getDocs,
+  getDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { nanoid } from "nanoid/non-secure";
 import { JournalBlock } from "../types/journal";
@@ -41,4 +52,37 @@ export const saveJournal = async (params: {
   );
 
   return id;
+};
+
+export const getJournalsByYear = async (year: number) => {
+  const user = getAuth().currentUser;
+  if (!user) throw new Error("Not authenticated");
+
+  const q = query(
+    collection(firestore, "users", user.uid, "journals"),
+    where("year", "==", year),
+    orderBy("date", "desc")
+  );
+
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data());
+};
+
+export const getJournalById = async (journalId: string) => {
+  const user = getAuth().currentUser;
+  if (!user) throw new Error("Not authenticated");
+
+  const ref = doc(firestore, "users", user.uid, "journals", journalId);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) return null;
+  return snap.data();
+};
+
+export const deleteJournalById = async (journalId: string) => {
+  const user = getAuth().currentUser;
+  if (!user) throw new Error("Not authenticated");
+
+  const ref = doc(firestore, "users", user.uid, "journals", journalId);
+  await deleteDoc(ref);
 };

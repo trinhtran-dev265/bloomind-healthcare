@@ -4,6 +4,18 @@ export const config = {
   runtime: "edge",
 };
 
+const BASE_SYSTEM_PROMPT = `
+You are Bloomie — a gentle AI companion that supports mental health.
+
+Rules:
+- Be empathetic and calm
+- No diagnosis
+- No medical advice
+- Do not replace human support
+- Keep responses short (2–6 sentences)
+- Ask at most ONE open-ended question
+`;
+
 const SYSTEM_PROMPT = `
 You are Bloomie — a gentle AI companion that supports your mental health.
 
@@ -65,6 +77,26 @@ type ApiError = {
   code: string;
 };
 
+// ====== Build a system prompt based on context ======
+function buildSystemPrompt(userContext?: string, isWelcome?: boolean) {
+  let prompt = BASE_SYSTEM_PROMPT;
+
+  if (userContext) {
+    prompt += `\n\nUser emotional context:\n${userContext}\n`;
+  }
+
+  if (isWelcome) {
+    prompt += `
+Task:
+Generate a warm, empathetic opening message.
+Do not give advice yet.
+Ask one gentle open-ended question.
+`;
+  }
+
+  return prompt;
+}
+
 // ====== Simple distress signal detection ======
 function detectCrisis(text: string): boolean {
   const signals = [
@@ -103,6 +135,14 @@ function crisisMessage(): ApiSuccess {
   };
 }
 
+function systemMessage(content: string): ChatMessage {
+  return { role: "system", content };
+}
+
+function userMessage(content: string): ChatMessage {
+  return { role: "user", content };
+}
+
 // ====== Handler ======
 export default async function handler(req: Request): Promise<Response> {
   const corsResponse = handleCors(req);
@@ -138,6 +178,35 @@ export default async function handler(req: Request): Promise<Response> {
     const body = await req.json();
     const message: string | undefined = body?.message;
     const history: ChatMessage[] = body?.history ?? [];
+    const userContext: string | undefined = body?.userContext;
+    const isWelcome: boolean = body?.isWelcome ?? false;
+    const prewarm: boolean | undefined = body?.prewarm;
+
+    if (prewarm) {
+      console.log("🔥 PREWARM REQUEST RECEIVED");
+
+      await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "nex-agi/deepseek-v3.1-nex-n1:free",
+          messages: [
+            { role: "system", content: "You are warming up." },
+            { role: "user", content: "ping" },
+          ],
+          max_tokens: 1,
+          temperature: 0,
+        }),
+      }).catch(() => {});
+
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: corsHeaders,
+      });
+    }
 
     if (!message || typeof message !== "string") {
       return new Response(JSON.stringify({ error: "Message is required" }), {
@@ -160,10 +229,12 @@ export default async function handler(req: Request): Promise<Response> {
       });
     }
 
+    const systemPrompt = buildSystemPrompt(userContext, isWelcome);
+
     const messages: ChatMessage[] = [
-      { role: "system", content: SYSTEM_PROMPT },
-      ...history.slice(-10), // tránh context quá dài
-      { role: "user", content: message },
+      systemMessage(systemPrompt),
+      ...history.slice(-10),
+      ...(message ? [userMessage(message)] : []),
     ];
 
     const aiResponse = await fetch(

@@ -1,4 +1,7 @@
 export type RootStackParamList = {
-  Chatbot: { conversationId?: string };
+  Chatbot: {
+    conversationId?: string;
+    userContext?: string;
+  };
   ChatHistory: undefined;
 };

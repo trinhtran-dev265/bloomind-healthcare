@@ -5,7 +5,6 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -19,6 +18,8 @@ import { saveJournal } from "../services/journal.service";
 import { JournalBlock } from "../types/journal";
 import { nanoid } from "nanoid/non-secure";
 import { uploadJournalImage } from "../services/image.service";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 
 
 const JournalCreateScreen = () => {

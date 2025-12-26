@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,12 +23,16 @@ import {
 } from "../services/chat.service";
 import { auth } from "../../../services/firebase/firebaseConfig";
 import { RootStackParamList } from "../types/chatbot";
+import { Images } from "../../../assets/images";
 
 interface Msg {
   id: string;
   text: string;
   sender: "user" | "bot";
 }
+
+const DEFAULT_WELCOME =
+  "Chào bạn, mình luôn sẵn sàng ở đây để lắng nghe bạn. Nói đi, đừng ngại nhé.";
 
 const ChatScreen = () => {
   const navigation = useNavigation();
@@ -40,6 +45,9 @@ const ChatScreen = () => {
 
   const initialConversationId =
     route.params?.conversationId ?? null;
+
+  const userContext = route.params?.userContext;
+  console.log("🔥 ChatScreen userContext:", userContext);
 
   const [conversationId, setConversationId] = useState<string | null>(
     initialConversationId
@@ -54,7 +62,10 @@ const ChatScreen = () => {
     const loadHistory = async () => {
       try {
         const history = await getAllMessages(uid, conversationId);
-        setMessages(history);
+        setMessages(prev => {
+          if (prev.length > 0) return prev; 
+          return history;
+        });
       } catch (err) {
         console.warn("Failed to load chat history", err);
       }
@@ -62,6 +73,58 @@ const ChatScreen = () => {
 
     loadHistory();
   }, [uid, conversationId]);
+
+  const DEFAULT_WELCOME =
+  "Chào bạn, mình luôn sẵn sàng ở đây để lắng nghe bạn. Nói đi, đừng ngại nhé.";
+
+useEffect(() => {
+  if (!uid) return;
+  if (messages.length > 0) return; // tránh gọi lại
+
+  if (!userContext) {
+    setMessages([
+      {
+        id: "welcome",
+        text: DEFAULT_WELCOME,
+        sender: "bot",
+      },
+    ]);
+    return;
+  }
+
+  const sendWelcome = async () => {
+    try {
+      setTyping(true);
+
+      const res = await sendMessageToAI(
+      "Please gently check in with the user based on their emotional context.",
+      [],
+      userContext,
+      true
+          );
+
+      setMessages([
+        {
+          id: "welcome",
+          text: res.reply,
+          sender: "bot",
+        },
+      ]);
+    } catch (err) {
+      setMessages([
+        {
+          id: "welcome",
+          text: DEFAULT_WELCOME,
+          sender: "bot",
+        },
+      ]);
+    } finally {
+      setTyping(false);
+    }
+  };
+
+  sendWelcome();
+}, [uid, userContext]);
 
 
   // Auto scroll
@@ -97,7 +160,8 @@ const ChatScreen = () => {
       const history = await getRecentMessages(uid, convoId);
 
       // 4️⃣ Call AI
-      const res = await sendMessageToAI(text, history);
+      const res = await sendMessageToAI(text, history, userContext,
+  false);
 
       // 5️⃣ Save AI reply
       await saveMessage(
@@ -154,6 +218,21 @@ const ChatScreen = () => {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.chatBody}>
+            {/* Waiting image (ONLY after tracking mood, before first message) */}
+        {userContext && messages.length === 0 && typing && (
+          <View style={styles.waitingContainer}>
+            <Image
+              source={Images.wait}
+              style={styles.waitingImage}
+              resizeMode="contain"
+            />
+            <Text style={styles.waitingText}>
+              Ê.. vừa mới tracking mood đúng không, chờ xíu nha!
+            </Text>
+          </View>
+        )}
+
         {/* Messages */}
         <FlatList
           ref={flatListRef}
@@ -164,6 +243,7 @@ const ChatScreen = () => {
           )}
           contentContainerStyle={{ padding: 16, paddingBottom: 30 }}
         />
+        </View>
 
         {/* Typing indicator */}
         {typing && (
@@ -197,4 +277,29 @@ const styles = StyleSheet.create({
   title: { fontSize: 17, fontWeight: "600" },
   typing: { paddingLeft: 20, paddingVertical: 6 },
   typingText: { fontStyle: "italic", color: "#A0A0A5" },
+  waitingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 160,
+  },
+
+  chatBody: {
+    flex: 1, 
+  },
+
+
+  waitingImage: {
+    width: 260,
+    height: 260,
+    marginBottom: 16,
+  },
+
+  waitingText: {
+    fontSize: 15,
+    color: "#555",
+    textAlign: "center",
+    lineHeight: 22,
+  },
 });
