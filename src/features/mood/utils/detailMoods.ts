@@ -48,6 +48,10 @@ export const DETAIL_MOODS: Record<string, string[]> = {
     "Yếu đuối",
     "Muốn khóc",
     "Mất động lực",
+    "Kiệt sức",
+    "Đuối năng lượng",
+    "Không muốn làm gì",
+    "Burnout",
   ],
 
   anxious: [

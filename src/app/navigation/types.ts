@@ -1,3 +1,6 @@
+// app/navigation/types.ts
+import { MoodLog } from "../../features/recommender/types/mood";
+
 export type RootStackParamList = {
   Splash: undefined;
   Home: undefined;
@@ -6,7 +9,7 @@ export type RootStackParamList = {
   Register: undefined;
   Profile: undefined;
 
- MoodTracking: {
+  MoodTracking: {
     mode?: "edit" | "create";
     date?: string; // YYYY-MM-DD
   };
@@ -29,9 +32,13 @@ export type RootStackParamList = {
   JournalCreate: undefined;
   JournalEdit: undefined;
   Journal: undefined;
-  
+
   Chatbot: undefined;
   ChatHistory: undefined;
+
+  Recommendation: {
+    todayMood?: MoodLog;
+  };
 
 };
 
@@ -40,3 +47,9 @@ declare global {
     interface RootParamList extends RootStackParamList { }
   }
 }
+
+export type NoParamRoute = {
+  [K in keyof RootStackParamList]: RootStackParamList[K] extends undefined
+    ? K
+    : never;
+}[keyof RootStackParamList];
